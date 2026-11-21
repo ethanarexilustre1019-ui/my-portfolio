@@ -46,13 +46,16 @@ export const HeroScene: React.FC = () => {
       return;
     }
 
-    let currentWidth = window.innerWidth || container.clientWidth || 1440;
-    let currentHeight = window.innerHeight || container.clientHeight || 900;
+    let currentWidth = container.clientWidth || window.innerWidth || 1440;
+    let currentHeight = container.clientHeight || window.innerHeight || 900;
     const isMobile = currentWidth < 768;
     const initialTier = resolveDeviceTier(currentWidth);
 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
-    renderer.setSize(currentWidth, currentHeight, true);
+    renderer.setSize(currentWidth, currentHeight, false);
+    renderer.domElement.style.width = '100%';
+    renderer.domElement.style.height = '100%';
+    renderer.domElement.style.display = 'block';
     renderer.setClearColor('#060a09', 1);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.08;
@@ -140,8 +143,8 @@ export const HeroScene: React.FC = () => {
     };
 
     const syncViewportSize = () => {
-      const w = window.innerWidth || container.clientWidth || 1440;
-      const h = window.innerHeight || container.clientHeight || 900;
+      const w = container.clientWidth || window.innerWidth || 1440;
+      const h = container.clientHeight || window.innerHeight || 900;
       const mobileNow = w < 768;
       const tierNow = resolveDeviceTier(w);
 
@@ -150,7 +153,7 @@ export const HeroScene: React.FC = () => {
 
       const nextPixelRatio = Math.min(window.devicePixelRatio || 1, mobileNow ? 1.5 : 2);
       renderer.setPixelRatio(nextPixelRatio);
-      renderer.setSize(w, h, true);
+      renderer.setSize(w, h, false);
       cameraController.resize(w / h, tierNow);
       postProcessing.resize(w, h, nextPixelRatio);
       environmentSystem.setLayoutMode(mobileNow);
@@ -160,6 +163,11 @@ export const HeroScene: React.FC = () => {
     };
 
     updateScrollState();
+
+    const resizeObserver = new ResizeObserver(() => {
+      syncViewportSize();
+    });
+    resizeObserver.observe(container);
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
@@ -172,10 +180,9 @@ export const HeroScene: React.FC = () => {
 
       if (isPageHidden) return;
 
-      if (
-        window.innerWidth !== currentWidth ||
-        window.innerHeight !== currentHeight
-      ) {
+      const liveW = container.clientWidth || window.innerWidth;
+      const liveH = container.clientHeight || window.innerHeight;
+      if (liveW !== currentWidth || liveH !== currentHeight) {
         syncViewportSize();
       }
 
@@ -200,6 +207,7 @@ export const HeroScene: React.FC = () => {
 
     return () => {
       window.cancelAnimationFrame(animationFrameId);
+      resizeObserver.disconnect();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('touchmove', handleTouchMove);

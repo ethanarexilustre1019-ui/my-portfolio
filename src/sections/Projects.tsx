@@ -1,23 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  ExternalLink,
-  Github,
-  Layers,
-  Award,
+  ArrowRight,
+  ArrowUpRight,
   AlertTriangle,
-  Eye,
-  ShieldAlert,
   Gamepad2,
   Network,
+  ShieldAlert,
 } from 'lucide-react';
 import { featuredProjects } from '../data/projects';
 import { usePortfolio } from '../app/providers/PortfolioProvider';
 import { LunarGlobePreview } from '../components/projects/LunarGlobePreview';
 import { audioService } from '../services/audioService';
 import { ProjectItem } from '../types/portfolio';
+import { TiltedFrame } from '../components/ui/TiltedFrame';
+
+type FilterType = 'ALL' | 'LIVE' | 'VERIFIED' | 'CAPSTONE' | 'AWARD';
 
 export const Projects: React.FC = () => {
   const { setSelectedProject } = usePortfolio();
+  const [activeFilter, setActiveFilter] = useState<FilterType>('ALL');
 
   // Proactively warm up Render free-tier live deployments in the background
   useEffect(() => {
@@ -33,299 +34,312 @@ export const Projects: React.FC = () => {
     setSelectedProject(project);
   };
 
+  const filteredProjects = featuredProjects.filter((project) => {
+    if (activeFilter === 'ALL') return true;
+    if (activeFilter === 'LIVE') return project.status === 'LIVE DEPLOYMENT';
+    if (activeFilter === 'VERIFIED') return project.status === 'VERIFIED REPOSITORY';
+    if (activeFilter === 'CAPSTONE') return project.status === 'DEVELOPMENT IN PROGRESS';
+    if (activeFilter === 'AWARD') return Boolean(project.isAwardWinner);
+    return true;
+  });
+
+  const filters: Array<{ id: FilterType; label: string; count: number }> = [
+    { id: 'ALL', label: 'ALL', count: featuredProjects.length },
+    {
+      id: 'LIVE',
+      label: 'LIVE',
+      count: featuredProjects.filter((p) => p.status === 'LIVE DEPLOYMENT').length,
+    },
+    {
+      id: 'VERIFIED',
+      label: 'VERIFIED',
+      count: featuredProjects.filter((p) => p.status === 'VERIFIED REPOSITORY').length,
+    },
+    {
+      id: 'CAPSTONE',
+      label: 'IN DEVELOPMENT',
+      count: featuredProjects.filter((p) => p.status === 'DEVELOPMENT IN PROGRESS').length,
+    },
+    {
+      id: 'AWARD',
+      label: 'AWARD',
+      count: featuredProjects.filter((p) => p.isAwardWinner).length,
+    },
+  ];
+
   return (
     <section
       id="projects"
       aria-label="Featured Projects Gallery"
-      className="relative py-24 px-4 sm:px-6 lg:px-8"
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-t border-white/10"
     >
       <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div data-gsap-reveal className="mb-12">
-          <p className="font-mono text-xs sm:text-sm font-semibold text-[#00E676] tracking-wider uppercase mb-2">
-            04. FEATURED PROJECTS
-          </p>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">
-                Featured <span className="text-[#00E676]">Projects &amp; Case Studies</span>
-              </h2>
-              <p className="text-base text-[#D5E2DC] mt-2 max-w-2xl leading-relaxed">
-                Real applications built to solve concrete problems—spanning 3D lunar geospatial
-                telemetry, AI-assisted phishing decision support, transparent community store
-                bookkeeping, local automotive commerce, and award-winning regional game development.
-              </p>
-            </div>
+        {/* Split Blueprint Header (Inspired by ralfmangubos.com /work) */}
+        <div
+          data-gsap-reveal
+          className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-8 mb-8 border-b border-white/10"
+        >
+          <div className="lg:col-span-7">
+            <p className="font-mono text-[11px] font-semibold text-[#00E676] tracking-[0.22em] uppercase mb-2">
+              04 / SELECTED WORK
+            </p>
+            <h2 className="font-heading text-5xl sm:text-6xl font-black uppercase tracking-tight leading-[0.94] text-[#F4F7F5]">
+              RECENT <span className="text-[#00E676]">BUILDS</span>
+            </h2>
+          </div>
+          <div className="lg:col-span-5">
+            <p className="text-sm sm:text-base text-[#C5D3CC] leading-relaxed">
+              Live production web apps, a 3D NASA lunar mission browser, AI
+              cybersecurity capstone research, and a Regional Top 2 game build.
+            </p>
           </div>
         </div>
 
-        {/* Projects Stack */}
-        <div className="space-y-10">
-          {featuredProjects.map((project, index) => {
+        {/* Monospace Status Filter Bar */}
+        <div
+          data-gsap-reveal
+          className="flex flex-wrap items-center gap-2 mb-10"
+        >
+          <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#8FA198] mr-2">
+            STATUS:
+          </span>
+          {filters.map((f) => {
+            const isActive = activeFilter === f.id;
+            return (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => {
+                  audioService.playClick();
+                  setActiveFilter(f.id);
+                }}
+                className={`px-3 py-1.5 rounded-[3px] font-mono text-[11px] tracking-[0.14em] uppercase border transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-[#00E676] text-[#050807] border-[#00E676] font-bold'
+                    : 'bg-[#0a100d] text-[#8FA198] border-white/12 hover:border-[#00E676]/50 hover:text-white'
+                }`}
+              >
+                {f.label}{' '}
+                <span className={isActive ? 'opacity-80' : 'text-[#00E676]'}>
+                  {f.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Editorial 2-Column Project Archive Grid with 3D Pointer-Tilt Covers */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+          {filteredProjects.map((project) => {
             const isCapstone = project.status === 'DEVELOPMENT IN PROGRESS';
-            const isRegionalAward = project.isAwardWinner;
+            const isRegionalAward = Boolean(project.isAwardWinner);
+            const isLive = project.status === 'LIVE DEPLOYMENT';
 
             return (
               <article
                 key={project.id}
                 data-gsap-reveal
-                className={
-                  isRegionalAward
-                    ? 'hud-panel-blue p-6 sm:p-8 border-2 border-[#72B8FF]/55'
-                    : 'hud-panel p-6 sm:p-8'
-                }
+                className="group flex flex-col justify-between bg-[#070c0a]/84 border border-white/10 hover:border-[#00E676]/45 rounded-[4px] p-5 sm:p-6 backdrop-blur-md transition-all"
               >
-                {/* Top Status & Category Header Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4 mb-6">
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="font-mono text-xs font-bold text-[#00E676]">
-                      PROJECT 0{index + 1}
-                    </span>
-                    <span className="text-white/25">&bull;</span>
-                    <span className="text-xs sm:text-sm font-medium text-[#72B8FF]">
+                <div>
+                  {/* 16:10 Showcase Frame with 3D Pointer-Tilt & Glare */}
+                  {project.has3DPreview ? (
+                    <div className="mb-5 rounded-[4px] overflow-hidden border border-white/12">
+                      <LunarGlobePreview />
+                    </div>
+                  ) : project.screenshots.length > 0 ? (
+                    <TiltedFrame
+                      onClick={() => openCaseStudy(project)}
+                      className="mb-5 aspect-[16/10] cursor-pointer"
+                    >
+                      <img
+                        src={project.screenshots[0].src}
+                        alt={project.screenshots[0].alt}
+                        className="w-full h-full object-cover object-top"
+                        loading="lazy"
+                      />
+                    </TiltedFrame>
+                  ) : isCapstone ? (
+                    <TiltedFrame
+                      onClick={() => openCaseStudy(project)}
+                      className="mb-5 aspect-[16/10] cursor-pointer p-5 sm:p-6 flex flex-col justify-between bg-gradient-to-br from-[#080f0c] via-[#0c1411] to-[#171209]"
+                    >
+                      <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.18em] uppercase text-amber-300">
+                        <span>BSIT CAPSTONE ARCHITECTURE</span>
+                        <span>MULTI-MODAL AI</span>
+                      </div>
+                      <div className="my-auto py-3 space-y-2.5">
+                        <div className="flex items-center gap-3 p-3 bg-[#050807]/85 border border-amber-400/30 rounded-[3px]">
+                          <ShieldAlert className="w-5 h-5 text-amber-300 shrink-0" />
+                          <div>
+                            <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-amber-300">
+                              INPUT PIPELINE
+                            </p>
+                            <p className="text-xs sm:text-sm text-white font-medium">
+                              Text, URLs &amp; OCR Screenshot Extraction
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-3 bg-[#050807]/85 border border-[#00E676]/30 rounded-[3px]">
+                          <AlertTriangle className="w-5 h-5 text-[#00E676] shrink-0" />
+                          <div>
+                            <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#00E676]">
+                              DECISION SUPPORT ENGINE
+                            </p>
+                            <p className="text-xs sm:text-sm text-white font-medium">
+                              NLP Intent Analysis + Domain Mismatch Verification
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="font-mono text-[10px] text-amber-200/80 uppercase tracking-[0.12em]">
+                        Advisory decision support — active development
+                      </p>
+                    </TiltedFrame>
+                  ) : isRegionalAward ? (
+                    <TiltedFrame
+                      onClick={() => openCaseStudy(project)}
+                      className="mb-5 aspect-[16/10] cursor-pointer p-6 flex flex-col justify-between bg-gradient-to-br from-[#07110D] via-[#0b1518] to-[#0a1d2a]"
+                    >
+                      <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.18em] uppercase text-[#72B8FF]">
+                        <span>REGIONAL COMPETITION BUILD</span>
+                        <span>PHILIPPINES</span>
+                      </div>
+                      <div className="my-auto text-center">
+                        <div className="w-14 h-14 mx-auto mb-3 rounded-[3px] bg-[#00E676]/12 border border-[#00E676] flex items-center justify-center">
+                          <Gamepad2 className="w-7 h-7 text-[#00E676]" />
+                        </div>
+                        <p className="font-mono text-[11px] font-bold tracking-[0.2em] uppercase text-[#00E676]">
+                          TOP 2 — REGIONAL LEVEL
+                        </p>
+                        <p className="font-heading text-2xl font-black uppercase text-white mt-1">
+                          NEGROS ISLAND REGION
+                        </p>
+                      </div>
+                      <p className="font-mono text-[10px] text-center text-[#8FA198] uppercase tracking-[0.16em]">
+                        Filipino Patintero Competitive Game Mechanics
+                      </p>
+                    </TiltedFrame>
+                  ) : (
+                    <TiltedFrame
+                      onClick={() => openCaseStudy(project)}
+                      className="mb-5 aspect-[16/10] cursor-pointer p-6 flex flex-col justify-between bg-gradient-to-br from-[#07110D] via-[#0b1511] to-[#071913]"
+                    >
+                      <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.18em] uppercase text-[#00E676]">
+                        <span>JAVA ALGORITHMIC SYSTEM</span>
+                        <span>DSA &amp; GRAPHS</span>
+                      </div>
+                      <div className="my-auto text-center">
+                        <div className="w-14 h-14 mx-auto mb-3 rounded-[3px] bg-[#00E676]/12 border border-[#00E676] flex items-center justify-center">
+                          <Network className="w-7 h-7 text-[#00E676]" />
+                        </div>
+                        <p className="font-mono text-[11px] font-bold tracking-[0.18em] uppercase text-[#00E676]">
+                          DIJKSTRA&rsquo;S SHORTEST-PATH ENGINE
+                        </p>
+                        <p className="font-heading text-2xl font-black uppercase text-white mt-1">
+                          HASHMAP &bull; LINKEDLIST &bull; PRIORITYQUEUE
+                        </p>
+                      </div>
+                      <p className="font-mono text-[10px] text-center text-[#8FA198] uppercase tracking-[0.16em]">
+                        Campus Event Scheduling &amp; Shortest-Path Routing
+                      </p>
+                    </TiltedFrame>
+                  )}
+
+                  {/* Monospace Category + Outlined Status Badges (Mirroring ralfmangubos.com) */}
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="px-2.5 py-1 rounded-[2px] border border-white/15 bg-[#050807] font-mono text-[10px] tracking-[0.14em] uppercase text-[#8FA198]">
                       {project.category}
                     </span>
-                  </div>
 
-                  <div className="flex flex-wrap items-center gap-2">
-                    {isCapstone && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-display font-bold bg-amber-500/20 text-amber-300 border border-amber-400/50">
-                        <AlertTriangle className="w-3.5 h-3.5" />
+                    {isCapstone ? (
+                      <span className="px-2.5 py-1 rounded-[2px] border border-amber-400/60 bg-amber-500/12 font-mono text-[10px] font-bold tracking-[0.14em] uppercase text-amber-300">
                         DEVELOPMENT IN PROGRESS
                       </span>
-                    )}
-                    {isRegionalAward && (
-                      <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-md text-xs font-display font-bold bg-[#00E676] text-[#050807]">
-                        <Award className="w-3.5 h-3.5" />
-                        REGIONAL TOP 2 — NEGROS ISLAND REGION
+                    ) : isRegionalAward ? (
+                      <span className="px-2.5 py-1 rounded-[2px] border border-[#00E676] bg-[#00E676]/15 font-mono text-[10px] font-bold tracking-[0.14em] uppercase text-[#00E676]">
+                        TOP 2 REGIONAL
+                      </span>
+                    ) : isLive ? (
+                      <span className="px-2.5 py-1 rounded-[2px] border border-[#00E676]/70 bg-[#00E676]/10 font-mono text-[10px] font-bold tracking-[0.14em] uppercase text-[#00E676]">
+                        LIVE
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-1 rounded-[2px] border border-[#72B8FF]/55 bg-[#72B8FF]/10 font-mono text-[10px] font-bold tracking-[0.14em] uppercase text-[#72B8FF]">
+                        VERIFIED
                       </span>
                     )}
-                    {!isCapstone && !isRegionalAward && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-display font-semibold bg-[#00E676]/15 text-[#00E676] border border-[#00E676]/40">
-                        {project.status}
+                  </div>
+
+                  {/* Condensed Uppercase Project Title */}
+                  <h3
+                    onClick={() => openCaseStudy(project)}
+                    className="font-heading text-2xl sm:text-3xl font-black uppercase tracking-tight leading-[1.02] text-[#F4F7F5] group-hover:text-[#00E676] transition-colors cursor-pointer mb-2.5"
+                  >
+                    {project.shortName}
+                  </h3>
+
+                  {/* Concise Problem/Value Summary */}
+                  <p className="text-sm text-[#C5D3CC] leading-relaxed mb-4">
+                    {project.description}
+                  </p>
+
+                  {/* Explicit Capstone Decision-Support Notice for PhishNot */}
+                  {project.disclaimer && (
+                    <p className="text-xs text-amber-200/90 bg-amber-500/10 border border-amber-400/35 rounded-[3px] p-3 mb-4 leading-relaxed">
+                      Active BSIT Capstone Project &mdash; provides AI-assisted
+                      decision support rather than an absolute guarantee of
+                      security.
+                    </p>
+                  )}
+
+                  {/* Compact Tech Stack Tags */}
+                  <div className="flex flex-wrap gap-1.5 mb-5">
+                    {project.technologies.slice(0, 6).map((tech) => (
+                      <span
+                        key={tech}
+                        className="px-2 py-0.5 rounded-[2px] bg-[#050807] border border-white/10 font-mono text-[10px] text-[#8FA198]"
+                      >
+                        {tech}
                       </span>
-                    )}
+                    ))}
                   </div>
                 </div>
 
-                {/* Main Two-Column Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                  {/* Visual Preview Area (5 cols) */}
-                  <div className="lg:col-span-5">
-                    {project.has3DPreview ? (
-                      <div className="rounded-xl overflow-hidden">
-                        <LunarGlobePreview />
-                      </div>
-                    ) : project.screenshots.length > 0 ? (
-                      <div
-                        onClick={() => openCaseStudy(project)}
-                        className="group relative rounded-xl bg-[#050807] border border-[#00E676]/30 overflow-hidden cursor-pointer"
-                      >
-                        <img
-                          src={project.screenshots[0].src}
-                          alt={project.screenshots[0].alt}
-                          className="w-full h-64 object-cover object-top group-hover:scale-103 transition-transform duration-500"
-                          loading="lazy"
-                        />
-                        <div className="p-3.5 bg-[#07110D]/95 border-t border-white/10 flex items-center justify-between">
-                          <span className="text-xs text-[#D5E2DC] truncate">
-                            {project.screenshots[0].caption}
-                          </span>
-                          <span className="text-xs font-semibold text-[#00E676] shrink-0 ml-2">
-                            {project.screenshots.length} Screenshot(s)
-                          </span>
-                        </div>
-                      </div>
-                    ) : isCapstone ? (
-                      <div
-                        onClick={() => openCaseStudy(project)}
-                        className="p-6 rounded-xl bg-[#050807] border border-amber-400/35 min-h-[260px] flex flex-col justify-between cursor-pointer hover:border-amber-400 transition-colors"
-                      >
-                        <div className="flex items-center justify-between text-xs font-semibold text-amber-300">
-                          <span>BSIT Capstone Architecture</span>
-                          <span>In Development</span>
-                        </div>
-                        <div className="my-4 space-y-3">
-                          <div className="flex items-center gap-3 p-3 rounded-lg bg-[#101915] border border-white/10 text-sm">
-                            <ShieldAlert className="w-5 h-5 text-amber-300 shrink-0" />
-                            <div>
-                              <p className="text-xs font-semibold text-amber-300">
-                                Multi-Modal Input Pipeline
-                              </p>
-                              <p className="text-white text-xs sm:text-sm">
-                                Text, URL &amp; OCR Screenshot Extraction
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3 p-3 rounded-lg bg-[#101915] border border-[#00E676]/25 text-sm">
-                            <Layers className="w-5 h-5 text-[#00E676] shrink-0" />
-                            <div>
-                              <p className="text-xs font-semibold text-[#00E676]">
-                                Detection &amp; Explanation Layer
-                              </p>
-                              <p className="text-white text-xs sm:text-sm">
-                                NLP Intent + Domain/Entity Mismatch Checks
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-xs text-amber-200/90">
-                          Decision-Support Advisory System (Not an absolute guarantee of security)
-                        </p>
-                      </div>
-                    ) : isRegionalAward ? (
-                      <div
-                        onClick={() => openCaseStudy(project)}
-                        className="p-6 rounded-xl bg-gradient-to-br from-[#07110D] via-[#101915] to-[#0b1f2e] border border-[#72B8FF]/50 min-h-[260px] flex flex-col justify-between cursor-pointer"
-                      >
-                        <div className="flex items-center justify-between text-xs font-semibold text-[#72B8FF]">
-                          <span>Regional Competition Award</span>
-                          <span>Philippines</span>
-                        </div>
-                        <div className="my-auto py-4 text-center">
-                          <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-[#00E676]/15 border-2 border-[#00E676] flex items-center justify-center shadow-[0_0_25px_rgba(0,230,118,0.25)]">
-                            <Gamepad2 className="w-8 h-8 text-[#00E676]" />
-                          </div>
-                          <p className="text-xs font-bold text-[#00E676] tracking-wider uppercase">
-                            REGIONAL TOP 2 ACHIEVEMENT
-                          </p>
-                          <h4 className="font-display text-xl font-bold text-white mt-1">
-                            Negros Island Region
-                          </h4>
-                          <p className="text-sm text-[#D5E2DC] mt-1">
-                            Competitive Game Development Project
-                          </p>
-                        </div>
-                        <div className="text-xs font-medium text-[#72B8FF] text-center border-t border-white/10 pt-2.5">
-                          Click to view full project case study
-                        </div>
-                      </div>
-                    ) : (
-                      <div
-                        onClick={() => openCaseStudy(project)}
-                        className="p-6 rounded-xl bg-gradient-to-br from-[#07110D] via-[#101915] to-[#081b14] border border-[#00E676]/45 min-h-[260px] flex flex-col justify-between cursor-pointer hover:border-[#00E676] transition-colors"
-                      >
-                        <div className="flex items-center justify-between text-xs font-semibold text-[#00E676]">
-                          <span>Java Algorithmic Architecture</span>
-                          <span>Graph &amp; PriorityQueue</span>
-                        </div>
-                        <div className="my-auto py-4 text-center">
-                          <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-[#00E676]/15 border-2 border-[#00E676] flex items-center justify-center shadow-[0_0_25px_rgba(0,230,118,0.22)]">
-                            <Network className="w-8 h-8 text-[#00E676]" />
-                          </div>
-                          <p className="text-xs font-bold text-[#00E676] tracking-wider uppercase">
-                            DIJKSTRA&rsquo;S SHORTEST-PATH ENGINE
-                          </p>
-                          <h4 className="font-display text-xl font-bold text-white mt-1">
-                            HashMap &bull; LinkedList &bull; PriorityQueue
-                          </h4>
-                          <p className="text-sm text-[#D5E2DC] mt-1">
-                            Event Visualization, Scheduling &amp; Campus Routing
-                          </p>
-                        </div>
-                        <div className="text-xs font-medium text-[#00E676] text-center border-t border-white/10 pt-2.5">
-                          Click to view full algorithmic case study
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                {/* Clean Editorial Inline Action Links (Matching ralfmangubos.com: "Read case study ->  Live site ↗") */}
+                <div className="flex flex-wrap items-center gap-5 pt-4 border-t border-white/10 text-sm">
+                  <button
+                    type="button"
+                    onClick={() => openCaseStudy(project)}
+                    className="inline-flex items-center gap-1.5 font-semibold text-[#F4F7F5] hover:text-[#00E676] transition-colors cursor-pointer"
+                  >
+                    <span>Read case study</span>
+                    <ArrowRight className="w-4 h-4 text-[#00E676]" />
+                  </button>
 
-                  {/* Case Study Details Area (7 cols) */}
-                  <div className="lg:col-span-7 space-y-5">
-                    <div>
-                      <h3 className="font-display text-2xl sm:text-3xl font-bold text-white">
-                        {project.name}
-                      </h3>
-                      {project.statusNote && (
-                        <p className="text-sm font-medium text-[#00E676] mt-1">
-                          {project.statusNote}
-                        </p>
-                      )}
-                    </div>
+                  {project.liveUrl && (
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[#8FA198] hover:text-white transition-colors"
+                    >
+                      <span>Live site</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </a>
+                  )}
 
-                    <p className="text-base text-[#D5E2DC] leading-relaxed">
-                      {project.description}
-                    </p>
-
-                    {/* Problem & Solution Summary */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="p-4 rounded-xl bg-[#050807]/80 border border-white/10">
-                        <p className="text-xs font-bold text-[#72B8FF] uppercase tracking-wider mb-1.5">
-                          Problem Statement
-                        </p>
-                        <p className="text-sm text-[#D5E2DC] leading-relaxed">
-                          {project.problemStatement}
-                        </p>
-                      </div>
-                      <div className="p-4 rounded-xl bg-[#050807]/80 border border-[#00E676]/25">
-                        <p className="text-xs font-bold text-[#00E676] uppercase tracking-wider mb-1.5">
-                          Proposed Solution
-                        </p>
-                        <p className="text-sm text-[#D5E2DC] leading-relaxed">
-                          {project.proposedSolution}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Capstone Disclaimer Box */}
-                    {project.disclaimer && (
-                      <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-400/40 text-xs sm:text-sm text-amber-100 leading-relaxed">
-                        {project.disclaimer}
-                      </div>
-                    )}
-
-                    {/* Tech Stack Badges */}
-                    <div className="flex flex-wrap gap-2">
-                      {project.technologies.map((tech) => (
-                        <span
-                          key={tech}
-                          className="px-3 py-1 rounded-md text-xs font-medium bg-[#050807] border border-[#00E676]/30 text-[#00E676]"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-3 border-t border-white/10">
-                      <button
-                        type="button"
-                        onClick={() => openCaseStudy(project)}
-                        className="hud-button-primary flex-1 sm:flex-initial px-5 py-2.5 text-xs sm:text-sm cursor-pointer"
-                      >
-                        <Eye className="w-4 h-4 shrink-0" />
-                        <span>View Case Study</span>
-                      </button>
-
-                      {project.liveUrl && (
-                        <a
-                          href={project.liveUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hud-button-secondary flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 text-xs sm:text-sm"
-                        >
-                          <span>
-                            {project.id === 'south-bacolod-auto-trading'
-                              ? 'VISIT LIVE WEBSITE'
-                              : 'VISIT LIVE PROJECT'}
-                          </span>
-                          <ExternalLink className="w-4 h-4 text-[#00E676] shrink-0" />
-                        </a>
-                      )}
-
-                      {project.githubUrl && (
-                        <a
-                          href={project.githubUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hud-button-secondary flex-1 sm:flex-initial px-4 py-2.5 text-xs sm:text-sm"
-                        >
-                          <Github className="w-4 h-4 text-[#72B8FF] shrink-0" />
-                          <span>GitHub Repository</span>
-                        </a>
-                      )}
-                    </div>
-                  </div>
+                  {project.githubUrl && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[#8FA198] hover:text-white transition-colors"
+                    >
+                      <span>GitHub</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </a>
+                  )}
                 </div>
               </article>
             );

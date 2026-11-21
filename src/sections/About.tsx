@@ -1,208 +1,291 @@
 import React, { useState } from 'react';
 import {
-  Cpu,
-  GraduationCap,
-  MapPin,
-  Sparkles,
-  UserCheck,
-  Code2,
-  Award,
+  ArrowRight,
   FileText,
+  Github,
+  Linkedin,
   RefreshCw,
 } from 'lucide-react';
 import { ownerProfile } from '../data/profile';
+import { SpotlightCard } from '../components/ui/SpotlightCard';
+import { audioService } from '../services/audioService';
+
+const VERIFIED_FACTS = [
+  { value: '06', label: 'FEATURED SOFTWARE BUILDS' },
+  { value: '02', label: 'LIVE PRODUCTION DEPLOYMENTS' },
+  { value: 'TOP 2', label: 'REGIONAL LEVEL — NEGROS ISLAND' },
+  { value: 'NASA', label: '2026 GALACTIC PROBLEM SOLVER' },
+];
+
+const CORE_CAPABILITIES = [
+  {
+    index: '01',
+    title: 'FULL-STACK WEB APPLICATIONS',
+    description:
+      'End-to-end web systems with React, TypeScript, Python FastAPI, PHP, and PostgreSQL — built from real community and business workflows straight to live cloud deployment.',
+  },
+  {
+    index: '02',
+    title: '3D WEB & INTERACTIVE INTERFACES',
+    description:
+      'Real-time Three.js and WebGL scenes, geospatial globes, custom shaders, and responsive interfaces engineered for smooth desktop, tablet, and mobile performance.',
+  },
+  {
+    index: '03',
+    title: 'AI & CYBERSECURITY DECISION SUPPORT',
+    description:
+      'Applied NLP, OCR text extraction, and domain-verification pipelines — focused on helping everyday users make safer, clearer decisions online.',
+  },
+];
 
 export const About: React.FC = () => {
   const [showAnimeAvatar, setShowAnimeAvatar] = useState<boolean>(false);
+
+  const scrollToContact = () => {
+    audioService.playClick();
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <section
       id="about"
       aria-label="About Ethan Arex V. Ilustre"
-      className="relative py-24 px-4 sm:px-6 lg:px-8"
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-t border-white/10"
     >
       <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div data-gsap-reveal className="mb-12">
-          <p className="font-mono text-xs sm:text-sm font-semibold text-[#00E676] tracking-wider uppercase mb-2">
-            02. ABOUT ME
-          </p>
-          <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">
-            About <span className="text-[#00E676]">Ethan Arex V. Ilustre</span>
-          </h2>
+        {/* 4-Column Architectural Hairline Fact Strip (Inspired by ralfmangubos.com) */}
+        <div
+          data-gsap-reveal
+          className="grid grid-cols-2 lg:grid-cols-4 border-y border-white/12 bg-[#070c0a]/80 backdrop-blur-md mb-20"
+        >
+          {VERIFIED_FACTS.map((stat, idx) => (
+            <div
+              key={stat.label}
+              className={`p-6 sm:p-8 ${
+                idx % 2 === 1 ? 'border-l border-white/12' : ''
+              } ${idx >= 2 ? 'border-t lg:border-t-0 lg:border-l border-white/12' : ''}`}
+            >
+              <p className="font-heading text-4xl sm:text-5xl font-black tracking-tight text-[#F4F7F5] leading-none">
+                {stat.value}
+              </p>
+              <p className="font-mono text-[10px] sm:text-[11px] tracking-[0.18em] uppercase text-[#8FA198] mt-2.5">
+                {stat.label}
+              </p>
+            </div>
+          ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
-          {/* Left Column: Professional Studio Portrait & Academic / Leadership Profile (2-col side-by-side on Tablet/iPad) */}
-          <div
-            data-gsap-reveal
-            className="lg:col-span-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 items-start"
-          >
-            <div className="hud-panel p-6">
-              <div className="relative aspect-square w-full rounded-xl bg-[#07110D] border border-[#00E676]/40 overflow-hidden flex flex-col items-center justify-end shadow-[0_0_28px_rgba(0,230,118,0.14)]">
-                <img
-                  src={
-                    showAnimeAvatar
-                      ? '/images/profile/midoriya-portrait.png'
-                      : ownerProfile.profileImagePath
-                  }
-                  alt={`${ownerProfile.fullName} - Professional Portrait`}
-                  className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-500"
-                />
+        {/* Asymmetrical Split Blueprint Section Header */}
+        <div
+          data-gsap-reveal
+          className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-10 mb-12 border-b border-white/10"
+        >
+          <div className="lg:col-span-7">
+            <p className="font-mono text-[11px] font-semibold text-[#00E676] tracking-[0.22em] uppercase mb-2">
+              02 / ABOUT
+            </p>
+            <h2 className="font-heading text-5xl sm:text-6xl font-black uppercase tracking-tight leading-[0.94] text-[#F4F7F5]">
+              MEET <span className="text-[#00E676]">ETHAN</span>
+            </h2>
+          </div>
+          <div className="lg:col-span-5">
+            <p className="text-sm sm:text-base text-[#C5D3CC] leading-relaxed">
+              Third-year BSIT software &amp; web application developer at the{' '}
+              <span className="text-white font-medium">{ownerProfile.university}</span>{' '}
+              — turning practical problems into live, working software.
+            </p>
+          </div>
+        </div>
 
-                {/* Top-Right Portrait Mode Switcher (Professional Photo vs. Hero Avatar) */}
+        {/* 2-Column Editorial Story (Left) + Architectural Profile Card (Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-20">
+          {/* Left: MY STORY */}
+          <div data-gsap-reveal className="lg:col-span-7 space-y-5">
+            <h3 className="font-heading text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
+              MY STORY
+            </h3>
+
+            <div className="space-y-4 text-[15px] sm:text-base text-[#C5D3CC] leading-[1.78]">
+              <p className="text-[#F4F7F5] font-medium">
+                {ownerProfile.expandedAbout[0]}
+              </p>
+              <p>{ownerProfile.expandedAbout[1]}</p>
+              <p>{ownerProfile.expandedAbout[2]}</p>
+              <p>{ownerProfile.expandedAbout[5]}</p>
+            </div>
+
+            {/* Philosophy Callout Bar */}
+            <div className="p-4 bg-[#080e0c]/90 border-l-2 border-[#00E676] border border-white/10 rounded-[3px]">
+              <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#00E676] mb-1">
+                ENGINEERING PRINCIPLE
+              </p>
+              <p className="text-sm sm:text-base font-medium text-white">
+                &ldquo;{ownerProfile.coreMessage}&rdquo;
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={scrollToContact}
+                className="hud-button-primary px-6 py-3 text-sm cursor-pointer"
+              >
+                <span>Work with me</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <a
+                href={ownerProfile.resumePath}
+                download="Ethan-Arex-Ilustre-Resume.pdf"
+                className="hud-button-secondary px-5 py-3 text-xs uppercase"
+              >
+                <FileText className="w-4 h-4 text-[#00E676]" />
+                <span>Download Resume (PDF)</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Right: Sleek Dark Hairline Profile Card (Mirroring ralfmangubos.com /about) */}
+          <div data-gsap-reveal className="lg:col-span-5">
+            <div className="hud-panel p-6 sm:p-7 space-y-6">
+              {/* Top Row: Circular Studio Portrait + Swap Avatar Button */}
+              <div className="flex items-start justify-between gap-4">
+                <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-[#00E676]/55 bg-[#050807] shrink-0">
+                  <img
+                    src={
+                      showAnimeAvatar
+                        ? '/images/profile/midoriya-portrait.png'
+                        : ownerProfile.profileImagePath
+                    }
+                    alt={`${ownerProfile.fullName} - Studio Portrait`}
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+
                 <button
                   type="button"
-                  onClick={() => setShowAnimeAvatar((prev) => !prev)}
-                  className="absolute top-3 right-3 z-20 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#050807]/85 border border-[#00E676]/45 text-[11px] font-display font-semibold text-[#00E676] hover:bg-[#00E676] hover:text-[#050807] transition-colors cursor-pointer backdrop-blur-md"
+                  onClick={() => {
+                    audioService.playClick();
+                    setShowAnimeAvatar((prev) => !prev);
+                  }}
+                  title="Switch between Studio Portrait and Hero Avatar"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[3px] bg-[#050807] border border-white/15 hover:border-[#00E676] font-mono text-[10px] tracking-[0.14em] uppercase text-[#C5D3CC] hover:text-[#00E676] transition-colors cursor-pointer"
                 >
                   <RefreshCw className="w-3 h-3" />
                   <span>{showAnimeAvatar ? 'Studio Photo' : 'Hero Avatar'}</span>
                 </button>
+              </div>
 
-                <div className="relative z-10 w-full p-4 bg-gradient-to-t from-[#050807] via-[#050807]/90 to-transparent">
-                  <p className="font-display text-lg font-bold text-white">
-                    {ownerProfile.fullName}
+              {/* Identity Readout */}
+              <div>
+                <p className="font-mono text-[11px] font-semibold tracking-[0.2em] uppercase text-[#00E676] mb-1">
+                  SOFTWARE &amp; WEB DEVELOPER
+                </p>
+                <h3 className="font-heading text-3xl sm:text-4xl font-black uppercase tracking-tight leading-none text-white">
+                  {ownerProfile.fullName}
+                </h3>
+                <p className="text-xs sm:text-sm text-[#8FA198] mt-2">
+                  {ownerProfile.academicLevel} &bull; {ownerProfile.university}
+                </p>
+              </div>
+
+              {/* 3-Column Mini Verified Fact Row */}
+              <div className="grid grid-cols-3 border-y border-white/10 py-4 text-center">
+                <div>
+                  <p className="font-heading text-2xl font-black text-white leading-none">
+                    06
                   </p>
-                  <p className="text-xs sm:text-sm text-[#00E676] font-medium">
-                    {ownerProfile.academicLevel} &bull; BSIT &bull; Software &amp; Web Developer
+                  <p className="font-mono text-[10px] tracking-[0.16em] uppercase text-[#8FA198] mt-1">
+                    PROJECTS
+                  </p>
+                </div>
+                <div className="border-x border-white/10">
+                  <p className="font-heading text-2xl font-black text-white leading-none">
+                    BSIT-3
+                  </p>
+                  <p className="font-mono text-[10px] tracking-[0.16em] uppercase text-[#8FA198] mt-1">
+                    UNO-R
+                  </p>
+                </div>
+                <div>
+                  <p className="font-heading text-2xl font-black text-[#00E676] leading-none">
+                    TOP 2
+                  </p>
+                  <p className="font-mono text-[10px] tracking-[0.16em] uppercase text-[#8FA198] mt-1">
+                    REGIONAL
                   </p>
                 </div>
               </div>
 
-              {/* Personal Philosophy Quote */}
-              <div className="mt-5 p-4 rounded-lg bg-[#050807]/90 border-l-4 border-[#00E676]">
-                <p className="text-xs font-semibold text-[#00E676] uppercase tracking-wider mb-1">
-                  Personal Philosophy
-                </p>
-                <p className="font-display text-base sm:text-lg font-semibold text-white italic">
-                  &ldquo;{ownerProfile.personalPhilosophy}&rdquo;
-                </p>
-              </div>
-
-              {/* Direct Resume PDF Download CTA */}
-              <div className="mt-4">
-                <a
-                  href={ownerProfile.resumePath}
-                  download="Ethan-Arex-Ilustre-Resume.pdf"
-                  className="w-full hud-button-primary py-3 text-xs sm:text-sm justify-center"
+              {/* Card Bottom CTA Bar */}
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={scrollToContact}
+                  className="hud-button-primary flex-1 py-3 text-sm cursor-pointer"
                 >
-                  <FileText className="w-4 h-4" />
-                  <span>DOWNLOAD OFFICIAL RESUME (PDF)</span>
+                  <span>Get in touch</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <a
+                  href="https://github.com/ethanarexilustre1019-ui"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub Profile"
+                  className="p-3 rounded-[3px] bg-[#050807] border border-white/15 hover:border-[#00E676] text-[#C5D3CC] hover:text-[#00E676] transition-colors"
+                >
+                  <Github className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/ethan-arex-ilustre-6501ba2bb/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn Profile"
+                  className="p-3 rounded-[3px] bg-[#050807] border border-white/15 hover:border-[#00E676] text-[#C5D3CC] hover:text-[#00E676] transition-colors"
+                >
+                  <Linkedin className="w-4 h-4" />
                 </a>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Academic, Leadership & Honor Credentials Card */}
-            <div className="hud-panel overflow-hidden">
-              <div className="p-6 space-y-4 text-sm sm:text-base">
-                <h3 className="font-display text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
-                  <UserCheck className="w-5 h-5 text-[#72B8FF]" />
-                  <span>Academic &amp; Leadership Credentials</span>
-                </h3>
-                <div className="flex items-start gap-3">
-                  <GraduationCap className="w-5 h-5 text-[#00E676] shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-white font-semibold">{ownerProfile.degree}</p>
-                    <p className="text-[#D5E2DC] text-sm">
-                      {ownerProfile.academicLevel} &bull; {ownerProfile.university}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Award className="w-5 h-5 text-[#00E676] shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-white font-semibold">
-                      Verified Competition &amp; Project Delivery
-                    </p>
-                    <p className="text-[#D5E2DC] text-sm">
-                      NASA Space Apps 2026 Galactic Problem Solver &bull; IBM Bob 2.0 Hackathon &bull; Regional Top 2 Game Dev
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-[#72B8FF] shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-white font-semibold">{ownerProfile.location}</p>
-                    <p className="text-[#D5E2DC] text-sm">
-                      Open to software development collaborations, internships, and projects
-                    </p>
-                  </div>
-                </div>
-              </div>
+        {/* 02.B // WHAT I DO — 3 Numbered Spotlight Cards (Inspired by ralfmangubos.com) */}
+        <div data-gsap-reveal>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+            <div>
+              <p className="font-mono text-[11px] font-semibold text-[#00E676] tracking-[0.22em] uppercase mb-1.5">
+                CAPABILITIES
+              </p>
+              <h3 className="font-heading text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">
+                WHAT I BUILD
+              </h3>
             </div>
+            <p className="text-sm text-[#8FA198] max-w-md">
+              Design, code, and deployment in one place — built around real user problems.
+            </p>
           </div>
 
-          {/* Right Column: Full Expanded About Me Narrative */}
-          <div data-gsap-reveal className="lg:col-span-7 space-y-6">
-            <div className="hud-panel p-7 sm:p-9 space-y-5">
-              <div className="flex items-center gap-2.5 border-b border-white/10 pb-4">
-                <Code2 className="w-5 h-5 text-[#00E676]" />
-                <h3 className="font-display text-xl font-bold text-white">
-                  My Approach to Software Development
-                </h3>
-              </div>
-
-              <div className="space-y-4 text-base sm:text-[17px] text-[#D5E2DC] leading-[1.75]">
-                {ownerProfile.expandedAbout.map((paragraph, index) => (
-                  <p
-                    key={index}
-                    className={
-                      index === 0 || index === ownerProfile.expandedAbout.length - 1
-                        ? 'text-white font-medium'
-                        : ''
-                    }
-                  >
-                    {paragraph}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {CORE_CAPABILITIES.map((cap) => (
+              <SpotlightCard
+                key={cap.index}
+                onMouseEnter={() => audioService.playHover()}
+                className="p-6 sm:p-7 flex flex-col justify-between min-h-[210px]"
+              >
+                <span className="font-mono text-xs text-[#00E676] tracking-[0.2em]">
+                  {cap.index}
+                </span>
+                <div className="mt-6">
+                  <h4 className="font-heading text-2xl font-black uppercase tracking-tight text-white mb-2.5">
+                    {cap.title}
+                  </h4>
+                  <p className="text-sm text-[#C5D3CC] leading-relaxed">
+                    {cap.description}
                   </p>
-                ))}
-              </div>
-
-              {/* Core Message Callout */}
-              <div className="mt-6 p-5 rounded-xl bg-gradient-to-r from-[#00E676]/15 via-[#101915] to-transparent border border-[#00E676]/40">
-                <p className="text-xs font-semibold text-[#00E676] uppercase tracking-wider mb-1">
-                  Core Commitment
-                </p>
-                <p className="font-display text-lg sm:text-xl font-bold text-white">
-                  &ldquo;{ownerProfile.coreMessage}&rdquo;
-                </p>
-              </div>
-            </div>
-
-            {/* Professional Identities & Technical Interests */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="hud-panel p-6">
-                <h3 className="font-display text-base font-bold text-white mb-3.5 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#00E676]" />
-                  <span>Professional Identity</span>
-                </h3>
-                <ul className="space-y-2.5 text-sm sm:text-base text-[#D5E2DC]">
-                  {ownerProfile.professionalIdentities.map((role) => (
-                    <li key={role} className="flex items-center gap-2.5">
-                      <span className="w-2 h-2 rounded-full bg-[#00E676]" />
-                      <span>{role}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="hud-panel-blue p-6">
-                <h3 className="font-display text-base font-bold text-white mb-3.5 flex items-center gap-2">
-                  <Cpu className="w-4 h-4 text-[#72B8FF]" />
-                  <span>Core Areas of Interest</span>
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {ownerProfile.interests.map((interest) => (
-                    <span
-                      key={interest}
-                      className="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-[#07110D] border border-[#72B8FF]/35 text-[#72B8FF]"
-                    >
-                      {interest}
-                    </span>
-                  ))}
                 </div>
-              </div>
-            </div>
+              </SpotlightCard>
+            ))}
           </div>
         </div>
       </div>

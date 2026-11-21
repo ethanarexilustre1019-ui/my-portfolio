@@ -4,15 +4,20 @@
   --color-primary-green: #00E676;
   --color-dark-green: #07110D;
   --color-bg-primary: #050807;
-  --color-bg-secondary: #101915;
-  --color-text-white: #FFFFFF;
-  --color-text-body: #D5E2DC;
-  --color-text-muted: #A7B8AE;
+  --color-bg-secondary: #0a100d;
+  --color-surface: #0c1310;
+  --color-border: rgba(255, 255, 255, 0.11);
+  --color-border-accent: rgba(0, 230, 118, 0.34);
+  --color-text-white: #F4F7F5;
+  --color-text-body: #C5D3CC;
+  --color-text-muted: #8FA198;
   --color-tech-blue: #72B8FF;
 
-  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Barlow Condensed', 'Space Grotesk', system-ui, sans-serif;
+  --font-display: 'Barlow Condensed', 'Space Grotesk', system-ui, sans-serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-hud: 'Orbitron', monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-hud: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 * {
@@ -21,7 +26,7 @@
 
 html {
   background-color: #050807;
-  color: #FFFFFF;
+  color: #F4F7F5;
   font-family: var(--font-sans);
   scroll-behavior: smooth;
   font-size: 16px;
@@ -30,17 +35,19 @@ html {
 body {
   margin: 0;
   background-color: #050807;
-  color: #FFFFFF;
+  color: #F4F7F5;
   overflow-x: hidden;
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
+.font-heading,
 .font-display {
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
 }
 
+.font-mono,
 .font-hud {
-  font-family: var(--font-hud);
+  font-family: var(--font-mono);
 }
 
 .font-sans {
@@ -49,7 +56,7 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -57,8 +64,8 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 230, 118, 0.35);
-  border-radius: 4px;
+  background: rgba(0, 230, 118, 0.32);
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -75,73 +82,190 @@ body {
   scrollbar-width: none;
 }
 
-/* Subtle Futuristic Background Grid */
+/* Architectural Blueprint Grid Surface (Inspired by ralfmangubos.com with Emerald Deku Accent) */
 .bg-tactical-grid {
-  background-size: 56px 56px;
+  background-size: 44px 44px;
   background-image:
-    linear-gradient(to right, rgba(0, 230, 118, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 230, 118, 0.035) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 230, 118, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 230, 118, 0.05) 1px, transparent 1px);
 }
 
-/* Clean, Easy-to-Read Glassmorphic Surfaces */
+/* Sharp Architectural Drawing Panels (1px Hairline Precision + Translucent Backdrop for Visible Blurred 3D Deku) */
 .hud-panel {
   position: relative;
-  background: linear-gradient(155deg, rgba(12, 21, 17, 0.86) 0%, rgba(6, 14, 10, 0.90) 100%);
-  border: 1px solid rgba(0, 230, 118, 0.24);
-  border-radius: 14px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  background: rgba(8, 13, 11, 0.84);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 4px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .hud-panel:hover {
-  border-color: rgba(0, 230, 118, 0.48);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65), 0 0 24px rgba(0, 230, 118, 0.08);
+  border-color: rgba(0, 230, 118, 0.42);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
 }
 
 .hud-panel-blue {
   position: relative;
-  background: linear-gradient(155deg, rgba(12, 21, 17, 0.86) 0%, rgba(6, 14, 10, 0.90) 100%);
-  border: 1px solid rgba(114, 184, 255, 0.28);
-  border-radius: 14px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
-}
-
-/* High-Contrast Text Shadow for Section Headers & Subtitles over Blurred 3D Background */
-section h2,
-section > div > div[data-gsap-reveal] > p {
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95), 0 1px 4px rgba(0, 0, 0, 0.9);
+  background: rgba(8, 13, 11, 0.84);
+  border: 1px solid rgba(114, 184, 255, 0.24);
+  border-radius: 4px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .hud-panel-blue:hover {
   border-color: rgba(114, 184, 255, 0.55);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55), 0 0 24px rgba(114, 184, 255, 0.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
 }
 
-/* Readable, High-Contrast Buttons */
+/* Cursor-Tracking Spotlight Card Surface */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+  background: rgba(8, 13, 11, 0.84);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 4px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    420px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgba(0, 230, 118, 0.12),
+    transparent 65%
+  );
+  transition: opacity 0.25s ease;
+}
+
+.spotlight-card:hover {
+  border-color: rgba(0, 230, 118, 0.45);
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* 3D Perspective Pointer-Tilt & Cursor Glare for Project Thumbnails */
+.tilted-card {
+  position: relative;
+  perspective: 900px;
+  transform-style: preserve-3d;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #060a08;
+  transition: border-color 0.25s ease;
+}
+
+.tilted-card:hover {
+  border-color: rgba(0, 230, 118, 0.48);
+}
+
+.tilted-card-inner {
+  transform: rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg)) scale(var(--tilt-s, 1));
+  transition: transform 0.18s ease-out;
+  will-change: transform;
+}
+
+.tilted-card-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    360px circle at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(0, 230, 118, 0.22),
+    transparent 62%
+  );
+  transition: opacity 0.2s ease;
+}
+
+.tilted-card:hover .tilted-card-glare {
+  opacity: 1;
+}
+
+/* Infinite Edge-Faded Materials Spec Tech Marquee */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-mask {
+  mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 28s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* High-Contrast Text Shadow over Blurred 3D Deku Background */
+section h2,
+section > div > div[data-gsap-reveal] > p {
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.92), 0 1px 4px rgba(0, 0, 0, 0.85);
+}
+
+/* Studio-Grade High-Contrast Architectural Buttons */
 .hud-button-primary {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
-  background: #00E676;
+  gap: 0.5rem;
+  background: #F4F7F5;
   color: #050807;
-  font-family: var(--font-display);
-  font-weight: 700;
-  border-radius: 10px;
-  letter-spacing: 0.02em;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  border-radius: 3px;
+  letter-spacing: 0.01em;
   transition: all 0.2s ease;
 }
 
 .hud-button-primary:hover {
-  background: #26ef89;
-  box-shadow: 0 0 22px rgba(0, 230, 118, 0.45);
-  transform: translateY(-1px);
+  background: #00E676;
+  color: #050807;
+  box-shadow: 0 0 22px rgba(0, 230, 118, 0.35);
+}
+
+.hud-button-emerald {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #00E676;
+  color: #050807;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border-radius: 3px;
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+}
+
+.hud-button-emerald:hover {
+  background: #2af08e;
+  box-shadow: 0 0 22px rgba(0, 230, 118, 0.42);
 }
 
 .hud-button-secondary {
@@ -149,36 +273,38 @@ section > div > div[data-gsap-reveal] > p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
-  background: rgba(16, 25, 21, 0.88);
-  color: #FFFFFF;
-  font-family: var(--font-display);
-  font-weight: 600;
-  border: 1px solid rgba(0, 230, 118, 0.35);
-  border-radius: 10px;
-  letter-spacing: 0.01em;
+  gap: 0.5rem;
+  background: rgba(10, 16, 13, 0.88);
+  color: #F4F7F5;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 3px;
+  letter-spacing: 0.04em;
   transition: all 0.2s ease;
 }
 
 .hud-button-secondary:hover {
   border-color: #00E676;
   color: #00E676;
-  background: rgba(0, 230, 118, 0.1);
-  box-shadow: 0 0 16px rgba(0, 230, 118, 0.18);
+  background: rgba(0, 230, 118, 0.08);
 }
 
 /* Restrained Emerald Text Glow */
 .text-glow-emerald {
-  text-shadow: 0 0 18px rgba(0, 230, 118, 0.32);
+  text-shadow: 0 0 22px rgba(0, 230, 118, 0.26);
 }
 
 .text-glow-blue {
-  text-shadow: 0 0 18px rgba(114, 184, 255, 0.32);
+  text-shadow: 0 0 18px rgba(114, 184, 255, 0.28);
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .marquee-track {
+    animation: none;
   }
   *,
   *::before,

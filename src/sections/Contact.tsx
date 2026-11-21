@@ -3,10 +3,9 @@ import {
   Mail,
   Github,
   Linkedin,
-  Send,
+  ArrowRight,
   CheckCircle2,
   AlertCircle,
-  MapPin,
   ExternalLink,
 } from 'lucide-react';
 import { ownerProfile } from '../data/profile';
@@ -24,7 +23,9 @@ export const Contact: React.FC = () => {
     subject: '',
     message: '',
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof ContactFormPayload, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ContactFormPayload, string>>
+  >({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitResult, setSubmitResult] = useState<{
     ok: boolean;
@@ -77,93 +78,135 @@ export const Contact: React.FC = () => {
     <section
       id="contact"
       aria-label="Contact Ethan Arex V. Ilustre"
-      className="relative py-24 px-4 sm:px-6 lg:px-8"
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-t border-white/10"
     >
       <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div data-gsap-reveal className="mb-12">
-          <p className="font-mono text-xs sm:text-sm font-semibold text-[#00E676] tracking-wider uppercase mb-2">
-            07. CONTACT
-          </p>
-          <h2 className="font-display text-3xl sm:text-5xl font-bold text-white tracking-tight">
-            HAVE A PROBLEM?{' '}
-            <span className="text-[#00E676] text-glow-emerald">LET&rsquo;S BUILD A SOLUTION.</span>
-          </h2>
-          <p className="text-base sm:text-lg text-[#D5E2DC] mt-3 max-w-2xl leading-relaxed">
-            I am always interested in exploring ideas, collaborating on projects, and building
-            technology that solves meaningful problems.
-          </p>
+        {/* Next-Sheet Conversion Banner (Echoing ralfmangubos.com "NEXT SHEET -> 06 CONTACT") */}
+        <div
+          data-gsap-reveal
+          className="mb-14 p-6 sm:p-8 bg-[#070c0a]/88 border border-white/12 rounded-[4px] backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-6"
+        >
+          <div>
+            <p className="font-mono text-[10px] sm:text-[11px] font-semibold text-[#00E676] tracking-[0.22em] uppercase mb-1.5">
+              NEXT SHEET &rarr; 07 CONTACT
+            </p>
+            <h2 className="font-heading text-4xl sm:text-5xl font-black uppercase tracking-tight leading-[0.94] text-[#F4F7F5]">
+              HAVE A PROJECT IN MIND?{' '}
+              <span className="text-[#00E676]">LET&rsquo;S BUILD IT.</span>
+            </h2>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4 shrink-0">
+            <a
+              href={`mailto:${ownerProfile.email}`}
+              className="hud-button-emerald px-5 py-3 text-sm"
+            >
+              <span>Email me directly</span>
+              <ArrowRight className="w-4 h-4" />
+            </a>
+            <a
+              href={ownerProfile.resumePath}
+              download="Ethan-Arex-Ilustre-Resume.pdf"
+              className="text-sm font-semibold text-[#F4F7F5] hover:text-[#00E676] transition-colors"
+            >
+              Download Resume
+            </a>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Direct Channels (5 cols) */}
-          <div data-gsap-reveal className="lg:col-span-5 space-y-5">
-            <div className="hud-panel p-6 sm:p-7 space-y-4">
-              <h3 className="font-display text-lg font-bold text-white border-b border-white/10 pb-3">
-                Direct Contact Channels
+        {/* Split Contact Workspace: Availability Metadata Left, Hairline Form Card Right */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          {/* Left Column: Metadata & Direct Links (5 cols) */}
+          <div data-gsap-reveal className="lg:col-span-5 space-y-6">
+            <div>
+              <h3 className="font-heading text-3xl sm:text-4xl font-black uppercase tracking-tight leading-[0.96] text-white mb-3">
+                LET&rsquo;S BUILD SOMETHING THAT HOLDS.
               </h3>
+              <p className="text-sm sm:text-base text-[#C5D3CC] leading-relaxed">
+                Open to software development collaborations, internships, web
+                application builds, and problem-solving projects.
+              </p>
+            </div>
 
-              {/* Email */}
-              <a
-                href={`mailto:${ownerProfile.email}`}
-                className="flex items-start gap-3.5 p-4 rounded-xl bg-[#050807]/85 border border-white/10 hover:border-[#00E676] transition-all group"
-              >
-                <Mail className="w-5 h-5 text-[#00E676] shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-semibold text-[#00E676]">Email</p>
-                  <p className="font-display font-bold text-base text-white group-hover:text-[#00E676] transition-colors break-all">
-                    {ownerProfile.email}
-                  </p>
-                </div>
-              </a>
+            {/* Availability Spec Rows */}
+            <div className="border-y border-white/12 divide-y divide-white/10 font-mono text-xs">
+              <div className="py-3.5 flex items-center justify-between gap-4">
+                <span className="text-[#8FA198] tracking-[0.16em] uppercase">
+                  DIRECT EMAIL
+                </span>
+                <a
+                  href={`mailto:${ownerProfile.email}`}
+                  className="text-[#00E676] hover:underline break-all text-right"
+                >
+                  {ownerProfile.email}
+                </a>
+              </div>
+              <div className="py-3.5 flex items-center justify-between gap-4">
+                <span className="text-[#8FA198] tracking-[0.16em] uppercase">
+                  TIMEZONE
+                </span>
+                <span className="text-white text-right">
+                  GMT+8 (PHILIPPINES) &bull; ASYNC-FRIENDLY
+                </span>
+              </div>
+              <div className="py-3.5 flex items-center justify-between gap-4">
+                <span className="text-[#8FA198] tracking-[0.16em] uppercase">
+                  INSTITUTION
+                </span>
+                <span className="text-white text-right">
+                  UNO-R &bull; BSIT THIRD YEAR
+                </span>
+              </div>
+            </div>
 
-              {/* GitHub */}
+            {/* Direct Social Links */}
+            <div className="space-y-2.5">
               <a
                 href="https://github.com/ethanarexilustre1019-ui"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-start gap-3.5 p-4 rounded-xl bg-[#050807]/85 border border-white/10 hover:border-[#00E676] transition-all group"
+                className="flex items-center justify-between p-3.5 rounded-[3px] bg-[#070c0a]/85 border border-white/12 hover:border-[#00E676] transition-colors group"
               >
-                <Github className="w-5 h-5 text-[#00E676] shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-semibold text-[#00E676]">GitHub</p>
-                  <p className="font-display font-bold text-base text-white group-hover:text-[#00E676] transition-colors">
+                <span className="flex items-center gap-3">
+                  <Github className="w-4 h-4 text-[#00E676]" />
+                  <span className="text-sm font-medium text-white group-hover:text-[#00E676]">
                     github.com/ethanarexilustre1019-ui
-                  </p>
-                </div>
+                  </span>
+                </span>
+                <ExternalLink className="w-3.5 h-3.5 text-[#8FA198]" />
               </a>
 
-              {/* LinkedIn */}
               <a
                 href="https://www.linkedin.com/in/ethan-arex-ilustre-6501ba2bb/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-start gap-3.5 p-4 rounded-xl bg-[#050807]/85 border border-white/10 hover:border-[#72B8FF] transition-all group"
+                className="flex items-center justify-between p-3.5 rounded-[3px] bg-[#070c0a]/85 border border-white/12 hover:border-[#00E676] transition-colors group"
               >
-                <Linkedin className="w-5 h-5 text-[#72B8FF] shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-semibold text-[#72B8FF]">LinkedIn</p>
-                  <p className="font-display font-bold text-base text-white group-hover:text-[#72B8FF] transition-colors">
+                <span className="flex items-center gap-3">
+                  <Linkedin className="w-4 h-4 text-[#72B8FF]" />
+                  <span className="text-sm font-medium text-white group-hover:text-[#00E676]">
                     in/ethan-arex-ilustre-6501ba2bb
-                  </p>
-                </div>
+                  </span>
+                </span>
+                <ExternalLink className="w-3.5 h-3.5 text-[#8FA198]" />
               </a>
 
-              {/* Location */}
-              <div className="flex items-start gap-3.5 p-4 rounded-xl bg-[#050807]/85 border border-white/10">
-                <MapPin className="w-5 h-5 text-[#00E676] shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-semibold text-[#00E676]">University &amp; Location</p>
-                  <p className="font-display font-bold text-base text-white">
-                    {ownerProfile.university}
-                  </p>
-                  <p className="text-sm text-[#D5E2DC]">{ownerProfile.location}</p>
-                </div>
-              </div>
+              <a
+                href={`mailto:${ownerProfile.email}`}
+                className="flex items-center justify-between p-3.5 rounded-[3px] bg-[#070c0a]/85 border border-white/12 hover:border-[#00E676] transition-colors group"
+              >
+                <span className="flex items-center gap-3">
+                  <Mail className="w-4 h-4 text-[#00E676]" />
+                  <span className="text-sm font-medium text-white group-hover:text-[#00E676]">
+                    {ownerProfile.email}
+                  </span>
+                </span>
+                <ExternalLink className="w-3.5 h-3.5 text-[#8FA198]" />
+              </a>
             </div>
           </div>
 
-          {/* Right Column: Validated Contact Form (7 cols) */}
+          {/* Right Column: Hairline Bordered Contact Form (7 cols) */}
           <div data-gsap-reveal className="lg:col-span-7">
             <form
               onSubmit={handleSubmit}
@@ -171,21 +214,22 @@ export const Contact: React.FC = () => {
               className="hud-panel p-6 sm:p-8 space-y-5"
               aria-label="Portfolio Contact Form"
             >
-              <div className="border-b border-white/10 pb-3">
-                <h3 className="font-display text-xl font-bold text-white">Send a Message</h3>
-                <p className="text-sm text-[#D5E2DC] mt-0.5">
-                  Fill out the form below to discuss a project, internship, or collaboration.
+              <div className="border-b border-white/10 pb-3.5">
+                <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#00E676] mb-1">
+                  PROJECT INQUIRY FORM
                 </p>
+                <h3 className="font-heading text-2xl font-black uppercase tracking-tight text-white">
+                  SEND A MESSAGE
+                </h3>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {/* Name */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label
                     htmlFor="contact-name"
-                    className="block text-sm font-medium text-[#D5E2DC] mb-2"
+                    className="block font-mono text-[11px] uppercase tracking-[0.14em] text-[#C5D3CC] mb-2"
                   >
-                    Your Name *
+                    Your name *
                   </label>
                   <input
                     id="contact-name"
@@ -193,8 +237,8 @@ export const Contact: React.FC = () => {
                     type="text"
                     value={form.name}
                     onChange={handleChange}
-                    placeholder="e.g., Alex Rivera"
-                    className="w-full px-4 py-3 rounded-lg bg-[#050807] border border-white/15 focus:border-[#00E676] focus:outline-none text-base text-white placeholder:text-white/35"
+                    placeholder="Alex Rivera"
+                    className="w-full px-3.5 py-2.5 rounded-[3px] bg-[#050807] border border-white/15 focus:border-[#00E676] focus:outline-none text-sm text-white placeholder:text-white/30"
                   />
                   {errors.name && (
                     <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1">
@@ -204,13 +248,12 @@ export const Contact: React.FC = () => {
                   )}
                 </div>
 
-                {/* Email */}
                 <div>
                   <label
                     htmlFor="contact-email"
-                    className="block text-sm font-medium text-[#D5E2DC] mb-2"
+                    className="block font-mono text-[11px] uppercase tracking-[0.14em] text-[#C5D3CC] mb-2"
                   >
-                    Your Email *
+                    Email *
                   </label>
                   <input
                     id="contact-email"
@@ -219,7 +262,7 @@ export const Contact: React.FC = () => {
                     value={form.email}
                     onChange={handleChange}
                     placeholder="alex@example.com"
-                    className="w-full px-4 py-3 rounded-lg bg-[#050807] border border-white/15 focus:border-[#00E676] focus:outline-none text-base text-white placeholder:text-white/35"
+                    className="w-full px-3.5 py-2.5 rounded-[3px] bg-[#050807] border border-white/15 focus:border-[#00E676] focus:outline-none text-sm text-white placeholder:text-white/30"
                   />
                   {errors.email && (
                     <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1">
@@ -230,11 +273,10 @@ export const Contact: React.FC = () => {
                 </div>
               </div>
 
-              {/* Subject */}
               <div>
                 <label
                   htmlFor="contact-subject"
-                  className="block text-sm font-medium text-[#D5E2DC] mb-2"
+                  className="block font-mono text-[11px] uppercase tracking-[0.14em] text-[#C5D3CC] mb-2"
                 >
                   Subject *
                 </label>
@@ -244,8 +286,8 @@ export const Contact: React.FC = () => {
                   type="text"
                   value={form.subject}
                   onChange={handleChange}
-                  placeholder="Project Collaboration / Internship Inquiry / Problem to Solve"
-                  className="w-full px-4 py-3 rounded-lg bg-[#050807] border border-white/15 focus:border-[#00E676] focus:outline-none text-base text-white placeholder:text-white/35"
+                  placeholder="Web App Build / Internship / Technical Collaboration"
+                  className="w-full px-3.5 py-2.5 rounded-[3px] bg-[#050807] border border-white/15 focus:border-[#00E676] focus:outline-none text-sm text-white placeholder:text-white/30"
                 />
                 {errors.subject && (
                   <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1">
@@ -255,13 +297,12 @@ export const Contact: React.FC = () => {
                 )}
               </div>
 
-              {/* Message */}
               <div>
                 <label
                   htmlFor="contact-message"
-                  className="block text-sm font-medium text-[#D5E2DC] mb-2"
+                  className="block font-mono text-[11px] uppercase tracking-[0.14em] text-[#C5D3CC] mb-2"
                 >
-                  Message *
+                  Tell me about your project *
                 </label>
                 <textarea
                   id="contact-message"
@@ -269,8 +310,8 @@ export const Contact: React.FC = () => {
                   rows={5}
                   value={form.message}
                   onChange={handleChange}
-                  placeholder="Describe the challenge, project idea, or opportunity..."
-                  className="w-full px-4 py-3 rounded-lg bg-[#050807] border border-white/15 focus:border-[#00E676] focus:outline-none text-base text-white placeholder:text-white/35 resize-y"
+                  placeholder="Describe the problem, timeline, or project goals..."
+                  className="w-full px-3.5 py-2.5 rounded-[3px] bg-[#050807] border border-white/15 focus:border-[#00E676] focus:outline-none text-sm text-white placeholder:text-white/30 resize-y"
                 />
                 {errors.message && (
                   <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1">
@@ -280,11 +321,10 @@ export const Contact: React.FC = () => {
                 )}
               </div>
 
-              {/* Submit Feedback Alert */}
               {submitResult && (
                 <div
                   role="status"
-                  className={`p-4 rounded-xl border text-sm ${
+                  className={`p-4 rounded-[3px] border text-sm ${
                     submitResult.ok
                       ? 'bg-[#00E676]/10 border-[#00E676]/50 text-white'
                       : 'bg-red-500/10 border-red-400/50 text-red-200'
@@ -301,9 +341,9 @@ export const Contact: React.FC = () => {
                       {submitResult.mailtoUrl && (
                         <a
                           href={submitResult.mailtoUrl}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#00E676] text-[#050807] font-display text-xs font-bold"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[3px] bg-[#00E676] text-[#050807] font-mono text-xs font-bold uppercase"
                         >
-                          <span>Open Direct Email Client</span>
+                          <span>Open Email Client</span>
                           <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                       )}
@@ -315,10 +355,10 @@ export const Contact: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto hud-button-primary px-8 py-3.5 text-sm sm:text-base cursor-pointer disabled:opacity-50"
+                className="w-full sm:w-auto hud-button-primary px-7 py-3.5 text-sm cursor-pointer disabled:opacity-50"
               >
-                <Send className="w-4 h-4" />
-                <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>
+                <span>{isSubmitting ? 'Sending...' : 'Send message'}</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </form>
           </div>

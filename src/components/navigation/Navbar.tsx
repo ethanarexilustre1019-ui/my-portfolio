@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
-  Menu,
   X,
   Volume2,
   VolumeX,
   Flame,
   EyeOff,
   Sparkles,
+  ArrowRight,
 } from 'lucide-react';
 import { usePortfolio } from '../../app/providers/PortfolioProvider';
 import { SectionId } from '../../types/portfolio';
@@ -15,17 +15,18 @@ import { audioService } from '../../services/audioService';
 interface NavItem {
   id: SectionId;
   label: string;
-  code: string;
+  sheet: string;
+  sheetTitle: string;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'hero', label: 'HOME', code: '01.' },
-  { id: 'about', label: 'ABOUT', code: '02.' },
-  { id: 'skills', label: 'ARSENAL', code: '03.' },
-  { id: 'projects', label: 'PROJECTS', code: '04.' },
-  { id: 'achievements', label: 'CERTIFICATES', code: '05.' },
-  { id: 'education', label: 'JOURNEY', code: '06.' },
-  { id: 'contact', label: 'CONTACT', code: '07.' },
+  { id: 'hero', label: 'HOME', sheet: '01', sheetTitle: 'STUDIO' },
+  { id: 'about', label: 'ABOUT', sheet: '02', sheetTitle: 'ABOUT' },
+  { id: 'skills', label: 'STACK', sheet: '03', sheetTitle: 'MATERIALS & STACK' },
+  { id: 'projects', label: 'WORK', sheet: '04', sheetTitle: 'SELECTED WORK' },
+  { id: 'achievements', label: 'AWARDS', sheet: '05', sheetTitle: 'CREDENTIALS' },
+  { id: 'education', label: 'JOURNEY', sheet: '06', sheetTitle: 'JOURNEY' },
+  { id: 'contact', label: 'CONTACT', sheet: '07', sheetTitle: 'CONTACT' },
 ];
 
 export const Navbar: React.FC = () => {
@@ -41,6 +42,9 @@ export const Navbar: React.FC = () => {
   } = usePortfolio();
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
 
+  const currentSheet =
+    NAV_ITEMS.find((item) => item.id === activeSection) || NAV_ITEMS[0];
+
   const scrollToSection = (id: SectionId) => {
     audioService.playClick();
     setActiveSection(id);
@@ -52,14 +56,36 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-[#050807]/90 backdrop-blur-md border-b border-[#00E676]/20">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 lg:h-20 flex items-center justify-between gap-2 sm:gap-4">
-        {/* Desktop & iPad Landscape Navigation Links (lg: 1024px+) */}
+    <header className="fixed top-0 left-0 right-0 z-40 bg-[#050807]/90 backdrop-blur-md border-b border-white/10">
+      {/* Main Sticky Architectural Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
+        {/* Mobile & Tablet Minimalist Menu Trigger (<1024px) */}
+        <button
+          type="button"
+          onClick={() => setMobileOpen((prev) => !prev)}
+          aria-label="Open navigation menu"
+          aria-expanded={mobileOpen}
+          className="lg:hidden inline-flex items-center gap-2.5 px-3 py-2 rounded-[3px] border border-white/15 bg-[#0a100d] text-white hover:border-[#00E676] transition-colors cursor-pointer"
+        >
+          {mobileOpen ? (
+            <X className="w-4 h-4 text-[#00E676]" />
+          ) : (
+            <span className="flex flex-col gap-1.5 w-4">
+              <span className="block h-[1.5px] w-full bg-white" />
+              <span className="block h-[1.5px] w-3 bg-[#00E676]" />
+            </span>
+          )}
+          <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#C5D3CC]">
+            MENU
+          </span>
+        </button>
+
+        {/* Contained Segmented Monospace Pill Navigation Bar (Desktop & iPad Landscape 1024px+) */}
         <nav
           aria-label="Main portfolio navigation"
-          className="hidden lg:flex items-center gap-1 xl:gap-2"
+          className="hidden lg:flex items-center p-1 rounded-[4px] bg-[#0a100d]/95 border border-white/10"
         >
-          {NAV_ITEMS.map((item) => {
+          {NAV_ITEMS.filter((item) => item.id !== 'contact').map((item) => {
             const isActive = activeSection === item.id;
             return (
               <button
@@ -67,59 +93,40 @@ export const Navbar: React.FC = () => {
                 type="button"
                 onClick={() => scrollToSection(item.id)}
                 onMouseEnter={() => audioService.playHover()}
-                className={`relative px-2.5 xl:px-3.5 py-2 rounded-lg text-xs xl:text-[13px] font-display font-semibold tracking-wide transition-all cursor-pointer whitespace-nowrap ${
+                className={`px-3 xl:px-3.5 py-1.5 rounded-[3px] font-mono text-[11px] tracking-[0.14em] uppercase transition-all cursor-pointer whitespace-nowrap ${
                   isActive
-                    ? 'text-[#00E676] bg-[#00E676]/12'
-                    : 'text-[#D5E2DC] hover:text-white hover:bg-white/5'
+                    ? 'bg-[#00E676] text-[#050807] font-bold shadow-[0_0_14px_rgba(0,230,118,0.28)]'
+                    : 'text-[#8FA198] hover:text-white'
                 }`}
               >
-                <span className="font-mono text-[10px] xl:text-[11px] text-[#00E676] mr-1">
-                  {item.code}
-                </span>
-                <span>{item.label}</span>
-                {isActive && (
-                  <span className="absolute bottom-0 left-2.5 right-2.5 h-0.5 bg-[#00E676] rounded-full shadow-[0_0_8px_#00E676]" />
-                )}
+                {item.label}
               </button>
             );
           })}
         </nav>
 
-        {/* Mobile & Tablet Active Section Indicator (<1024px) */}
-        <div className="lg:hidden flex items-center gap-2 min-w-0">
-          <span className="w-2 h-2 rounded-full bg-[#00E676] animate-pulse shrink-0" />
-          <span className="font-mono text-[11px] text-[#00E676] font-bold shrink-0">
-            {NAV_ITEMS.find((n) => n.id === activeSection)?.code || '01.'}
-          </span>
-          <span className="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-white truncate">
-            {NAV_ITEMS.find((n) => n.id === activeSection)?.label || 'HOME'}
-          </span>
-        </div>
-
-        {/* Utility Controls (RAGE MODE, Audio, Motion) & Mobile/Tablet Toggle */}
+        {/* Right Action Cluster: RAGE MODE, MHA AUDIO, Motion, and High-Contrast Off-White CONTACT -> */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto">
           <button
             type="button"
             onClick={triggerEnergySurge}
             aria-pressed={energySurge}
             title="Toggle Deku 100% Full-Cowling / Super-Saiyan Rage Mode"
-            className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-lg text-[11px] sm:text-xs font-display font-bold tracking-wider uppercase border transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-[3px] font-mono text-[11px] font-bold tracking-[0.12em] uppercase border transition-all cursor-pointer ${
               energySurge
-                ? 'bg-[#00E676] text-[#050807] border-[#ffffff] shadow-[0_0_24px_#00E676]'
-                : 'bg-[#101915] text-[#00E676] border-[#00E676]/45 hover:border-[#00E676] hover:bg-[#00E676]/12'
+                ? 'bg-[#00E676] text-[#050807] border-white shadow-[0_0_22px_rgba(0,230,118,0.5)]'
+                : 'bg-[#0a100d] text-[#00E676] border-[#00E676]/45 hover:border-[#00E676] hover:bg-[#00E676]/10'
             }`}
           >
             <Flame
-              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
+              className={`w-3.5 h-3.5 ${
                 energySurge ? 'text-[#050807] animate-bounce' : 'text-[#00E676]'
               }`}
             />
-            <span className="hidden xs:inline sm:inline">
-              {energySurge ? 'RAGE: ON' : 'RAGE MODE'}
+            <span className="hidden sm:inline">
+              {energySurge ? 'RAGE: 100%' : 'RAGE MODE'}
             </span>
-            <span className="xs:hidden sm:hidden">
-              {energySurge ? '100%' : 'RAGE'}
-            </span>
+            <span className="sm:hidden">{energySurge ? '100%' : 'RAGE'}</span>
           </button>
 
           <button
@@ -135,18 +142,18 @@ export const Navbar: React.FC = () => {
                 ? 'MHA Soundtrack & Mode Audio: ON'
                 : 'MHA Soundtrack & Mode Audio: MUTED'
             }
-            className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg text-xs font-display font-semibold border transition-colors cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-2.5 py-2 rounded-[3px] font-mono text-[11px] tracking-[0.1em] uppercase border transition-colors cursor-pointer ${
               soundEnabled
-                ? 'border-[#00E676] text-[#00E676] bg-[#00E676]/12 shadow-[0_0_12px_rgba(0,230,118,0.2)]'
-                : 'border-white/15 text-[#D5E2DC] bg-[#101915] hover:text-white hover:border-white/30'
+                ? 'border-[#00E676]/60 text-[#00E676] bg-[#00E676]/10'
+                : 'border-white/15 text-[#8FA198] bg-[#0a100d] hover:text-white'
             }`}
           >
             {soundEnabled ? (
-              <Volume2 className="w-4 h-4 animate-pulse" />
+              <Volume2 className="w-3.5 h-3.5" />
             ) : (
-              <VolumeX className="w-4 h-4" />
+              <VolumeX className="w-3.5 h-3.5" />
             )}
-            <span className="hidden md:inline lg:hidden xl:inline">
+            <span className="hidden xl:inline">
               {soundEnabled ? 'MHA AUDIO' : 'MUTED'}
             </span>
           </button>
@@ -160,40 +167,52 @@ export const Navbar: React.FC = () => {
                 : 'Enable reduced motion mode'
             }
             title={reducedMotion ? 'Reduced Motion: ON' : '3D Animations: ON'}
-            className={`p-2 rounded-lg border transition-colors cursor-pointer ${
+            className={`hidden sm:inline-flex p-2 rounded-[3px] border transition-colors cursor-pointer ${
               reducedMotion
-                ? 'border-[#72B8FF] text-[#72B8FF] bg-[#72B8FF]/12'
-                : 'border-white/15 text-[#D5E2DC] bg-[#101915] hover:text-white hover:border-white/30'
+                ? 'border-[#72B8FF] text-[#72B8FF] bg-[#72B8FF]/10'
+                : 'border-white/15 text-[#8FA198] bg-[#0a100d] hover:text-white'
             }`}
           >
             {reducedMotion ? (
-              <EyeOff className="w-4 h-4" />
+              <EyeOff className="w-3.5 h-3.5" />
             ) : (
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-3.5 h-3.5" />
             )}
           </button>
 
-          {/* Responsive Drawer Menu Button (shown on Mobile & Portrait Tablet/iPad below lg) */}
           <button
             type="button"
-            onClick={() => setMobileOpen((prev) => !prev)}
-            aria-label="Toggle navigation menu"
-            aria-expanded={mobileOpen}
-            className="lg:hidden p-2 rounded-lg border border-[#00E676]/40 text-white bg-[#101915] hover:border-[#00E676] cursor-pointer"
+            onClick={() => scrollToSection('contact')}
+            className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-[3px] bg-[#F4F7F5] text-[#050807] hover:bg-[#00E676] font-mono text-[11px] font-bold tracking-[0.12em] uppercase transition-colors cursor-pointer"
           >
-            {mobileOpen ? (
-              <X className="w-5 h-5 text-[#00E676]" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
+            <span>CONTACT</span>
+            <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
           </button>
         </div>
       </div>
 
-      {/* Quick One-Tap Horizontal Pill Bar for Mobile, Tablet & iPad (<1024px) */}
+      {/* Architectural Drawing-Set Sub-Header Strip (SHEET XX / 07 — SECTION) */}
+      <div className="border-t border-white/10 bg-[#050807]/92">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-8 flex items-center justify-between font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-[#8FA198]">
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00E676]" />
+            <span>
+              SHEET {currentSheet.sheet} / 07 &mdash;{' '}
+              <strong className="text-[#C5D3CC] font-semibold">
+                {currentSheet.sheetTitle}
+              </strong>
+            </span>
+          </span>
+          <span className="hidden sm:inline">
+            NEGROS ISLAND REGION &mdash; PHILIPPINES
+          </span>
+        </div>
+      </div>
+
+      {/* Mobile & Tablet Quick Horizontal Pill Bar (<1024px) */}
       <div
         aria-label="Quick section navigation strip"
-        className="lg:hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar px-3 sm:px-6 py-2 border-t border-white/10 bg-[#050807]/95"
+        className="lg:hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar px-4 py-2 border-t border-white/10 bg-[#060b09]/95"
       >
         {NAV_ITEMS.map((item) => {
           const isActive = activeSection === item.id;
@@ -202,14 +221,13 @@ export const Navbar: React.FC = () => {
               key={item.id}
               type="button"
               onClick={() => scrollToSection(item.id)}
-              className={`px-3 py-1.5 rounded-md text-[11px] sm:text-xs font-display font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
+              className={`px-2.5 py-1 rounded-[3px] font-mono text-[10px] tracking-[0.14em] uppercase whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-[#00E676] text-[#050807] font-bold shadow-[0_0_12px_rgba(0,230,118,0.3)]'
-                  : 'bg-[#101915] text-[#D5E2DC] border border-white/10 hover:border-[#00E676]/40'
+                  ? 'bg-[#00E676] text-[#050807] font-bold'
+                  : 'bg-[#0a100d] text-[#8FA198] border border-white/10 hover:text-white'
               }`}
             >
-              <span className="font-mono mr-1 opacity-80">{item.code}</span>
-              <span>{item.label}</span>
+              {item.sheet} / {item.label}
             </button>
           );
         })}
@@ -219,7 +237,7 @@ export const Navbar: React.FC = () => {
       {mobileOpen && (
         <nav
           aria-label="Mobile portfolio navigation"
-          className="lg:hidden bg-[#050807]/98 border-b border-[#00E676]/30 px-4 pt-3 pb-6 space-y-2 shadow-2xl"
+          className="lg:hidden bg-[#050807]/98 border-t border-white/10 px-4 pt-3 pb-6 space-y-2 shadow-2xl"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {NAV_ITEMS.map((item) => {
@@ -229,15 +247,15 @@ export const Navbar: React.FC = () => {
                   key={item.id}
                   type="button"
                   onClick={() => scrollToSection(item.id)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left font-display font-semibold text-sm border transition-colors cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-[3px] text-left font-mono text-xs tracking-[0.14em] uppercase border transition-colors cursor-pointer ${
                     isActive
-                      ? 'border-[#00E676] bg-[#00E676]/15 text-[#00E676]'
-                      : 'border-white/10 bg-[#101915]/70 text-[#D5E2DC] hover:text-white'
+                      ? 'border-[#00E676] bg-[#00E676]/12 text-[#00E676] font-bold'
+                      : 'border-white/10 bg-[#0a100d] text-[#C5D3CC] hover:text-white'
                   }`}
                 >
                   <span>{item.label}</span>
-                  <span className="font-mono text-xs text-[#00E676]">
-                    {item.code}
+                  <span className="text-[11px] text-[#00E676]">
+                    SHEET {item.sheet}
                   </span>
                 </button>
               );
@@ -249,11 +267,13 @@ export const Navbar: React.FC = () => {
               triggerEnergySurge();
               setMobileOpen(false);
             }}
-            className="w-full mt-2 hud-button-primary py-3 text-sm cursor-pointer"
+            className="w-full mt-2 hud-button-emerald py-3 font-mono text-xs uppercase tracking-[0.14em] cursor-pointer"
           >
             <Flame className="w-4 h-4" />
             <span>
-              {energySurge ? 'Deactivate Rage Mode' : 'Activate 100% Rage Mode'}
+              {energySurge
+                ? 'DEACTIVATE 100% RAGE MODE'
+                : 'ACTIVATE 100% RAGE MODE'}
             </span>
           </button>
         </nav>

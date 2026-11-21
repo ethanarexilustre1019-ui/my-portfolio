@@ -1,9 +1,10 @@
 import React from 'react';
-import { Eye, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { certificatesData } from '../data/certificates';
 import { usePortfolio } from '../app/providers/PortfolioProvider';
 import { audioService } from '../services/audioService';
 import { CertificateItem } from '../types/portfolio';
+import { TiltedFrame } from '../components/ui/TiltedFrame';
 
 export const Achievements: React.FC = () => {
   const { setSelectedCertificate } = usePortfolio();
@@ -17,129 +18,132 @@ export const Achievements: React.FC = () => {
     <section
       id="achievements"
       aria-label="Achievements and Certifications"
-      className="relative py-24 px-4 sm:px-6 lg:px-8"
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-t border-white/10"
     >
       <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div data-gsap-reveal className="mb-12">
-          <p className="font-mono text-xs sm:text-sm font-semibold text-[#00E676] tracking-wider uppercase mb-2">
-            05. ACHIEVEMENTS &amp; CERTIFICATIONS
-          </p>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">
-                Achievements &amp; <span className="text-[#00E676]">Certifications</span>
-              </h2>
-              <p className="text-base text-[#D5E2DC] mt-2 max-w-2xl leading-relaxed">
-                Verified hackathon certificates and regional competitive recognitions. Click any
-                certificate card to open the high-resolution interactive viewer.
-              </p>
-            </div>
+        {/* Split Blueprint Header */}
+        <div
+          data-gsap-reveal
+          className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end pb-8 mb-10 border-b border-white/10"
+        >
+          <div className="lg:col-span-7">
+            <p className="font-mono text-[11px] font-semibold text-[#00E676] tracking-[0.22em] uppercase mb-2">
+              05 / VERIFIED CREDENTIALS
+            </p>
+            <h2 className="font-heading text-5xl sm:text-6xl font-black uppercase tracking-tight leading-[0.94] text-[#F4F7F5]">
+              HACKATHONS &amp; <span className="text-[#00E676]">AWARDS</span>
+            </h2>
+          </div>
+          <div className="lg:col-span-5">
+            <p className="text-sm sm:text-base text-[#C5D3CC] leading-relaxed">
+              Verified international hackathon completions and regional
+              engineering awards. Click any credential to open the
+              high-resolution interactive viewer.
+            </p>
           </div>
         </div>
 
         {/* Certificate Cards Grid (1-col Mobile, 2-col Tablet/iPad, 3-col Desktop) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-          {certificatesData.map((cert) => {
-            const isRegional = cert.badgeType === 'regional-award';
-            return (
-              <article
-                key={cert.id}
-                data-gsap-reveal
-                className={`flex flex-col justify-between ${
-                  isRegional ? 'hud-panel-blue p-6' : 'hud-panel p-6'
-                }`}
-              >
-                <div>
-                  {/* Date & Credential Type */}
-                  <div className="flex items-center justify-between gap-2 text-xs font-medium mb-4">
-                    <span className="text-[#00E676] font-semibold">{cert.award}</span>
-                    <span className="px-2.5 py-1 rounded-md bg-[#050807] border border-white/10 text-[#72B8FF]">
-                      {cert.date}
-                    </span>
-                  </div>
-
-                  {/* Certificate Image Preview */}
-                  {cert.imagePath ? (
-                    <div
-                      onClick={() => handleInspect(cert)}
-                      className="group relative mb-5 rounded-xl bg-[#030504] border border-[#00E676]/35 overflow-hidden aspect-[16/11] flex items-center justify-center p-2 cursor-pointer"
-                    >
-                      <img
-                        src={cert.imagePath}
-                        alt={`${cert.title} - ${cert.award} (${cert.recipientDisplay})`}
-                        className="w-full h-full object-contain group-hover:scale-103 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-[#050807]/65 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="hud-button-primary px-4 py-2 text-xs">
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>View Certificate</span>
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div
-                      onClick={() => handleInspect(cert)}
-                      className="mb-5 rounded-xl bg-gradient-to-br from-[#07110D] via-[#101915] to-[#0a2336] border border-[#72B8FF]/50 aspect-[16/11] flex flex-col items-center justify-center p-6 text-center cursor-pointer hover:border-[#00E676] transition-colors"
-                    >
-                      <Sparkles className="w-10 h-10 text-[#00E676] mb-2" />
-                      <p className="text-xs font-bold text-[#00E676] tracking-wider uppercase">
-                        {cert.award}
-                      </p>
-                      <p className="font-display text-lg font-bold text-white mt-1">
-                        Negros Island Region, Philippines
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Title */}
-                  <h3 className="font-display text-xl font-bold text-white mb-3">
-                    {cert.title}
-                  </h3>
-
-                  {/* Recipient Info */}
-                  <div className="p-3.5 rounded-lg bg-[#050807]/85 border border-white/10 mb-3 text-xs sm:text-sm">
-                    <p className="text-white">
-                      <span className="text-[#A7B8AE]">Recipient:</span>{' '}
-                      <strong className="text-[#00E676]">{cert.recipientDisplay}</strong>
-                    </p>
-                    {cert.recipientNote && (
-                      <p className="text-xs text-[#D5E2DC] mt-1.5 leading-relaxed">
-                        {cert.recipientNote}
-                      </p>
-                    )}
-                  </div>
-
-                  <p className="text-sm text-[#D5E2DC] leading-relaxed mb-5">
-                    {cert.recognition}
-                  </p>
+          {certificatesData.map((cert, idx) => (
+            <article
+              key={cert.id}
+              data-gsap-reveal
+              className="group flex flex-col justify-between bg-[#070c0a]/84 border border-white/10 hover:border-[#00E676]/45 rounded-[4px] p-5 sm:p-6 backdrop-blur-md transition-all"
+            >
+              <div>
+                {/* Top Index & Date Row */}
+                <div className="flex items-center justify-between gap-2 font-mono text-[10px] tracking-[0.16em] uppercase mb-4">
+                  <span className="text-[#00E676] font-bold">
+                    0{idx + 1} / {cert.award}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-[2px] bg-[#050807] border border-white/12 text-[#8FA198]">
+                    {cert.date}
+                  </span>
                 </div>
 
-                <div className="pt-4 border-t border-white/10 space-y-3">
-                  <div className="flex flex-wrap gap-1.5">
-                    {cert.verifiedTags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2.5 py-1 rounded-md text-xs bg-[#050807] border border-white/10 text-[#D5E2DC]"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <button
-                    type="button"
+                {/* Certificate Image Preview with 3D Pointer Tilt */}
+                {cert.imagePath ? (
+                  <TiltedFrame
                     onClick={() => handleInspect(cert)}
-                    className="w-full hud-button-secondary py-2.5 text-sm cursor-pointer"
+                    className="mb-5 aspect-[16/11] bg-[#030504] p-2 cursor-pointer flex items-center justify-center"
                   >
-                    <Eye className="w-4 h-4 text-[#00E676]" />
-                    <span>{cert.imagePath ? 'View Certificate' : 'View Achievement Details'}</span>
-                  </button>
+                    <img
+                      src={cert.imagePath}
+                      alt={`${cert.title} - ${cert.award} (${cert.recipientDisplay})`}
+                      className="w-full h-full object-contain"
+                      loading="lazy"
+                    />
+                  </TiltedFrame>
+                ) : (
+                  <TiltedFrame
+                    onClick={() => handleInspect(cert)}
+                    className="mb-5 aspect-[16/11] bg-gradient-to-br from-[#07110D] via-[#0b1518] to-[#0a1d2a] p-6 flex flex-col items-center justify-center text-center cursor-pointer"
+                  >
+                    <Sparkles className="w-9 h-9 text-[#00E676] mb-2" />
+                    <p className="font-mono text-[11px] font-bold text-[#00E676] tracking-[0.18em] uppercase">
+                      {cert.award}
+                    </p>
+                    <p className="font-heading text-xl font-black uppercase text-white mt-1">
+                      NEGROS ISLAND REGION
+                    </p>
+                  </TiltedFrame>
+                )}
+
+                {/* Title */}
+                <h3 className="font-heading text-2xl font-black uppercase tracking-tight leading-tight text-white group-hover:text-[#00E676] transition-colors mb-3">
+                  {cert.title}
+                </h3>
+
+                {/* Recipient Info */}
+                <div className="p-3 rounded-[3px] bg-[#050807]/90 border border-white/10 mb-3 text-xs">
+                  <p className="text-[#C5D3CC]">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#8FA198]">
+                      RECIPIENT:{' '}
+                    </span>
+                    <strong className="text-[#00E676]">
+                      {cert.recipientDisplay}
+                    </strong>
+                  </p>
+                  {cert.recipientNote && (
+                    <p className="text-[11px] text-[#8FA198] mt-1.5 leading-relaxed">
+                      {cert.recipientNote}
+                    </p>
+                  )}
                 </div>
-              </article>
-            );
-          })}
+
+                <p className="text-sm text-[#C5D3CC] leading-relaxed mb-5">
+                  {cert.recognition}
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-white/10 space-y-3">
+                <div className="flex flex-wrap gap-1.5">
+                  {cert.verifiedTags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2 py-0.5 rounded-[2px] font-mono text-[10px] bg-[#050807] border border-white/10 text-[#8FA198]"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleInspect(cert)}
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F4F7F5] hover:text-[#00E676] transition-colors cursor-pointer pt-1"
+                >
+                  <span>
+                    {cert.imagePath
+                      ? 'Inspect certificate'
+                      : 'Read achievement details'}
+                  </span>
+                  <ArrowRight className="w-4 h-4 text-[#00E676]" />
+                </button>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
