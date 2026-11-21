@@ -48,10 +48,10 @@ export const ProjectModal: React.FC = () => {
       <div
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto hud-panel border-[#00E676]/50 p-6 sm:p-8 text-white shadow-[0_0_50px_rgba(0,230,118,0.18)]"
+        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto hud-panel border-[#00E676]/50 p-5 sm:p-8 text-white shadow-[0_0_50px_rgba(0,230,118,0.18)]"
       >
-        {/* Top Modal Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-[#00E676]/25 pb-5 mb-6">
+        {/* Sticky Top Modal Header for Mobile, Tablet & iPad accessibility */}
+        <div className="sticky -top-5 sm:-top-8 z-20 -mx-5 sm:-mx-8 px-5 sm:px-8 pt-4 sm:pt-6 pb-4 bg-[#07110D]/95 backdrop-blur-md flex items-start justify-between gap-4 border-b border-[#00E676]/25 mb-6">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-2">
               <span className="font-hud text-xs text-[#00E676] tracking-wider">

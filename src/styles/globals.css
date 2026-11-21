@@ -65,6 +65,16 @@ body {
   background: #00E676;
 }
 
+/* Hide scrollbar for touch horizontal pill strips on Mobile, Tablet & iPad */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Subtle Futuristic Background Grid */
 .bg-tactical-grid {
   background-size: 56px 56px;

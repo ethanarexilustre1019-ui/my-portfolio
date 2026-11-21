@@ -32,9 +32,12 @@ export const About: React.FC = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Professional Studio Portrait & Academic / Leadership Profile */}
-          <div data-gsap-reveal className="lg:col-span-5 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+          {/* Left Column: Professional Studio Portrait & Academic / Leadership Profile (2-col side-by-side on Tablet/iPad) */}
+          <div
+            data-gsap-reveal
+            className="lg:col-span-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 items-start"
+          >
             <div className="hud-panel p-6">
               <div className="relative aspect-square w-full rounded-xl bg-[#07110D] border border-[#00E676]/40 overflow-hidden flex flex-col items-center justify-end shadow-[0_0_28px_rgba(0,230,118,0.14)]">
                 <img

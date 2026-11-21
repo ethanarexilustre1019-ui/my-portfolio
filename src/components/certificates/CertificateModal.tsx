@@ -40,10 +40,10 @@ export const CertificateModal: React.FC = () => {
       <div
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto hud-panel border-[#00E676]/60 p-5 sm:p-7 text-white shadow-[0_0_60px_rgba(0,230,118,0.22)]"
+        className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto hud-panel border-[#00E676]/60 p-4 sm:p-7 text-white shadow-[0_0_60px_rgba(0,230,118,0.22)]"
       >
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-[#00E676]/25 pb-4 mb-5">
+        {/* Sticky Header for Mobile, Tablet & iPad accessibility */}
+        <div className="sticky -top-4 sm:-top-7 z-20 -mx-4 sm:-mx-7 px-4 sm:px-7 pt-4 sm:pt-5 pb-4 bg-[#07110D]/95 backdrop-blur-md flex items-start justify-between gap-3 border-b border-[#00E676]/25 mb-5">
           <div>
             <p className="font-hud text-xs text-[#00E676] tracking-wider">
               {selectedCertificate.indexCode} // VERIFIED CREDENTIAL

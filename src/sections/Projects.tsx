@@ -287,13 +287,13 @@ export const Projects: React.FC = () => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-white/10">
+                    <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-3 border-t border-white/10">
                       <button
                         type="button"
                         onClick={() => openCaseStudy(project)}
-                        className="hud-button-primary px-5 py-2.5 text-sm cursor-pointer"
+                        className="hud-button-primary flex-1 sm:flex-initial px-5 py-2.5 text-xs sm:text-sm cursor-pointer"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-4 h-4 shrink-0" />
                         <span>View Case Study</span>
                       </button>
 
@@ -302,14 +302,14 @@ export const Projects: React.FC = () => {
                           href={project.liveUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hud-button-secondary px-5 py-2.5 text-sm"
+                          className="hud-button-secondary flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 text-xs sm:text-sm"
                         >
                           <span>
                             {project.id === 'south-bacolod-auto-trading'
                               ? 'VISIT LIVE WEBSITE'
                               : 'VISIT LIVE PROJECT'}
                           </span>
-                          <ExternalLink className="w-4 h-4 text-[#00E676]" />
+                          <ExternalLink className="w-4 h-4 text-[#00E676] shrink-0" />
                         </a>
                       )}
 
@@ -318,9 +318,9 @@ export const Projects: React.FC = () => {
                           href={project.githubUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hud-button-secondary px-4 py-2.5 text-sm"
+                          className="hud-button-secondary flex-1 sm:flex-initial px-4 py-2.5 text-xs sm:text-sm"
                         >
-                          <Github className="w-4 h-4 text-[#72B8FF]" />
+                          <Github className="w-4 h-4 text-[#72B8FF] shrink-0" />
                           <span>GitHub Repository</span>
                         </a>
                       )}

@@ -32,10 +32,10 @@ export const Skills: React.FC = () => {
           </p>
         </div>
 
-        {/* Readable Category Filter Tabs */}
+        {/* Readable Category Filter Tabs (Single-row touch scroll on Mobile, wrapped on Tablet/Desktop) */}
         <div
           data-gsap-reveal
-          className="flex flex-wrap items-center gap-2.5 mb-10 pb-5 border-b border-white/10"
+          className="flex sm:flex-wrap items-center gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 sm:mb-10 pb-4 sm:pb-5 border-b border-white/10"
         >
           <button
             type="button"
@@ -43,7 +43,7 @@ export const Skills: React.FC = () => {
               audioService.playClick();
               setSelectedCategoryId('all');
             }}
-            className={`px-4 py-2.5 rounded-lg text-xs sm:text-sm font-display font-semibold transition-all cursor-pointer ${
+            className={`px-4 py-2.5 rounded-lg text-xs sm:text-sm font-display font-semibold whitespace-nowrap shrink-0 transition-all cursor-pointer ${
               selectedCategoryId === 'all'
                 ? 'bg-[#00E676] text-[#050807] font-bold shadow-[0_0_16px_rgba(0,230,118,0.3)]'
                 : 'bg-[#101915] text-[#D5E2DC] border border-white/15 hover:border-[#00E676] hover:text-white'
@@ -62,7 +62,7 @@ export const Skills: React.FC = () => {
                   audioService.playClick();
                   setSelectedCategoryId(cat.id);
                 }}
-                className={`px-4 py-2.5 rounded-lg text-xs sm:text-sm font-display font-semibold transition-all cursor-pointer ${
+                className={`px-4 py-2.5 rounded-lg text-xs sm:text-sm font-display font-semibold whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                   active
                     ? 'bg-[#00E676] text-[#050807] font-bold shadow-[0_0_16px_rgba(0,230,118,0.3)]'
                     : 'bg-[#101915] text-[#D5E2DC] border border-white/15 hover:border-[#00E676]/60 hover:text-white'

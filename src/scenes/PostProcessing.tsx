@@ -22,6 +22,9 @@ export class PostProcessing {
     isMobile: boolean
   ) {
     this.composer = new EffectComposer(renderer);
+    this.composer.setPixelRatio(renderer.getPixelRatio());
+    this.composer.setSize(width, height);
+
     const renderPass = new RenderPass(scene, camera);
     this.composer.addPass(renderPass);
 
@@ -39,8 +42,12 @@ export class PostProcessing {
     this.composer.render();
   }
 
-  public resize(width: number, height: number): void {
+  public resize(width: number, height: number, pixelRatio?: number): void {
+    if (pixelRatio !== undefined) {
+      this.composer.setPixelRatio(pixelRatio);
+    }
     this.composer.setSize(width, height);
+    this.bloomPass.resolution.set(width, height);
   }
 
   public dispose(): void {

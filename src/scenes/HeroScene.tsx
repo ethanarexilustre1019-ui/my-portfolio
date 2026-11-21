@@ -1,11 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { usePortfolio } from '../app/providers/PortfolioProvider';
-import { CameraController } from './CameraController';
+import { CameraController, ViewportDeviceTier } from './CameraController';
 import { CharacterController } from './CharacterController';
 import { EnergySystem } from './EnergySystem';
 import { EnvironmentSystem } from './EnvironmentSystem';
 import { PostProcessing } from './PostProcessing';
+
+function resolveDeviceTier(width: number): ViewportDeviceTier {
+  if (width < 768) return 'mobile';
+  if (width < 1024) return 'tablet';
+  if (width < 1280) return 'ipad-landscape';
+  return 'desktop';
+}
 
 export const HeroScene: React.FC = () => {
   const mountRef = useRef<HTMLDivElement | null>(null);
@@ -42,6 +49,7 @@ export const HeroScene: React.FC = () => {
     let currentWidth = window.innerWidth || container.clientWidth || 1440;
     let currentHeight = window.innerHeight || container.clientHeight || 900;
     const isMobile = currentWidth < 768;
+    const initialTier = resolveDeviceTier(currentWidth);
 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
     renderer.setSize(currentWidth, currentHeight, true);
@@ -53,9 +61,10 @@ export const HeroScene: React.FC = () => {
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const cameraController = new CameraController(currentWidth / currentHeight);
+    const cameraController = new CameraController(currentWidth / currentHeight, initialTier);
     const environmentSystem = new EnvironmentSystem(scene, isMobile);
     const characterController = new CharacterController(scene, isMobile);
+    characterController.setLayoutMode(initialTier);
     const energySystem = new EnergySystem(scene, isMobile);
     const postProcessing = new PostProcessing(
       renderer,
@@ -85,6 +94,15 @@ export const HeroScene: React.FC = () => {
       const nx = (event.clientX / window.innerWidth) * 2 - 1;
       const ny = -(event.clientY / window.innerHeight) * 2 + 1;
       cameraController.handleMouseMove(nx, ny);
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      if (event.touches.length > 0) {
+        const touch = event.touches[0];
+        const nx = (touch.clientX / Math.max(window.innerWidth, 1)) * 2 - 1;
+        const ny = -(touch.clientY / Math.max(window.innerHeight, 1)) * 2 + 1;
+        cameraController.handleMouseMove(nx * 0.75, ny * 0.65);
+      }
     };
 
     const updateScrollState = () => {
@@ -125,16 +143,18 @@ export const HeroScene: React.FC = () => {
       const w = window.innerWidth || container.clientWidth || 1440;
       const h = window.innerHeight || container.clientHeight || 900;
       const mobileNow = w < 768;
+      const tierNow = resolveDeviceTier(w);
 
       currentWidth = w;
       currentHeight = h;
 
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobileNow ? 1.5 : 2));
+      const nextPixelRatio = Math.min(window.devicePixelRatio || 1, mobileNow ? 1.5 : 2);
+      renderer.setPixelRatio(nextPixelRatio);
       renderer.setSize(w, h, true);
-      cameraController.resize(w / h);
-      postProcessing.resize(w, h);
+      cameraController.resize(w / h, tierNow);
+      postProcessing.resize(w, h, nextPixelRatio);
       environmentSystem.setLayoutMode(mobileNow);
-      characterController.setLayoutMode(mobileNow);
+      characterController.setLayoutMode(tierNow);
       energySystem.setLayoutMode(mobileNow);
       updateScrollState();
     };
@@ -143,6 +163,7 @@ export const HeroScene: React.FC = () => {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('scroll', updateScrollState, { passive: true });
     window.addEventListener('resize', syncViewportSize);
 
@@ -181,6 +202,7 @@ export const HeroScene: React.FC = () => {
       window.cancelAnimationFrame(animationFrameId);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('scroll', updateScrollState);
       window.removeEventListener('resize', syncViewportSize);
 

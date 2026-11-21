@@ -38,8 +38,8 @@ export const Achievements: React.FC = () => {
           </div>
         </div>
 
-        {/* Certificate Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-7">
+        {/* Certificate Cards Grid (1-col Mobile, 2-col Tablet/iPad, 3-col Desktop) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
           {certificatesData.map((cert) => {
             const isRegional = cert.badgeType === 'regional-award';
             return (

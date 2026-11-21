@@ -707,9 +707,27 @@ export class CharacterController {
     });
   }
 
-  public setLayoutMode(isMobile: boolean): void {
-    this.rootGroup.position.set(0, isMobile ? -0.12 : 0.0, 0);
-    this.rootGroup.scale.setScalar(isMobile ? 0.85 : 1.0);
+  public setLayoutMode(
+    mode: boolean | 'mobile' | 'tablet' | 'ipad-landscape' | 'desktop'
+  ): void {
+    const tier =
+      typeof mode === 'boolean' ? (mode ? 'mobile' : 'desktop') : mode;
+    if (tier === 'mobile') {
+      // Elevate Deku into the dedicated upper-center mobile Hero stage above the card
+      this.rootGroup.position.set(0, 0.34, 0);
+      this.rootGroup.scale.setScalar(0.82);
+    } else if (tier === 'tablet') {
+      // Elevate Deku into the upper-center iPad/Tablet stage above the 2-column cards
+      this.rootGroup.position.set(0, 0.28, 0);
+      this.rootGroup.scale.setScalar(0.88);
+    } else if (tier === 'ipad-landscape') {
+      // Proportionally frame Deku between the left and right columns on 1024px-1279px iPad Landscape
+      this.rootGroup.position.set(0, -0.02, 0);
+      this.rootGroup.scale.setScalar(0.86);
+    } else {
+      this.rootGroup.position.set(0, 0.0, 0);
+      this.rootGroup.scale.setScalar(1.0);
+    }
   }
 
   public dispose(): void {
