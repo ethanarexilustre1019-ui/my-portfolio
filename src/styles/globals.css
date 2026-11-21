@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary-green: #00E676;
+  --color-dark-green: #07110D;
+  --color-bg-primary: #050807;
+  --color-bg-secondary: #101915;
+  --color-text-white: #FFFFFF;
+  --color-text-body: #D5E2DC;
+  --color-text-muted: #A7B8AE;
+  --color-tech-blue: #72B8FF;
+
+  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-hud: 'Orbitron', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #050807;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  background-color: #050807;
+  color: #FFFFFF;
+  overflow-x: hidden;
+  line-height: 1.65;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-hud {
+  font-family: var(--font-hud);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050807;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 230, 118, 0.35);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00E676;
+}
+
+/* Subtle Futuristic Background Grid */
+.bg-tactical-grid {
+  background-size: 56px 56px;
+  background-image:
+    linear-gradient(to right, rgba(0, 230, 118, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 230, 118, 0.035) 1px, transparent 1px);
+}
+
+/* Clean, Easy-to-Read Glassmorphic Surfaces */
+.hud-panel {
+  position: relative;
+  background: linear-gradient(155deg, rgba(12, 21, 17, 0.86) 0%, rgba(6, 14, 10, 0.90) 100%);
+  border: 1px solid rgba(0, 230, 118, 0.24);
+  border-radius: 14px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.hud-panel:hover {
+  border-color: rgba(0, 230, 118, 0.48);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65), 0 0 24px rgba(0, 230, 118, 0.08);
+}
+
+.hud-panel-blue {
+  position: relative;
+  background: linear-gradient(155deg, rgba(12, 21, 17, 0.86) 0%, rgba(6, 14, 10, 0.90) 100%);
+  border: 1px solid rgba(114, 184, 255, 0.28);
+  border-radius: 14px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+/* High-Contrast Text Shadow for Section Headers & Subtitles over Blurred 3D Background */
+section h2,
+section > div > div[data-gsap-reveal] > p {
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95), 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+.hud-panel-blue:hover {
+  border-color: rgba(114, 184, 255, 0.55);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55), 0 0 24px rgba(114, 184, 255, 0.1);
+}
+
+/* Readable, High-Contrast Buttons */
+.hud-button-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  background: #00E676;
+  color: #050807;
+  font-family: var(--font-display);
+  font-weight: 700;
+  border-radius: 10px;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+}
+
+.hud-button-primary:hover {
+  background: #26ef89;
+  box-shadow: 0 0 22px rgba(0, 230, 118, 0.45);
+  transform: translateY(-1px);
+}
+
+.hud-button-secondary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  background: rgba(16, 25, 21, 0.88);
+  color: #FFFFFF;
+  font-family: var(--font-display);
+  font-weight: 600;
+  border: 1px solid rgba(0, 230, 118, 0.35);
+  border-radius: 10px;
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+}
+
+.hud-button-secondary:hover {
+  border-color: #00E676;
+  color: #00E676;
+  background: rgba(0, 230, 118, 0.1);
+  box-shadow: 0 0 16px rgba(0, 230, 118, 0.18);
+}
+
+/* Restrained Emerald Text Glow */
+.text-glow-emerald {
+  text-shadow: 0 0 18px rgba(0, 230, 118, 0.32);
+}
+
+.text-glow-blue {
+  text-shadow: 0 0 18px rgba(114, 184, 255, 0.32);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

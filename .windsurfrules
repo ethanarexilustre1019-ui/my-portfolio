@@ -1,0 +1,6 @@
+# .windsurfrules — Ethan Arex V. Ilustre Portfolio Rules
+
+1. Follow `AGENTS.md`, `.cursorrules`, and `CLAUDE.md` at all times.
+2. Never allow the 3D Hero character or bright backlight halo to bleed behind scrolled text sections (`02. ABOUT` through `07. CONTACT`).
+3. Maintain high-contrast typography (`#FFFFFF` headings, `#D5E2DC` body copy, `#00E676` emerald accents, `#72B8FF` technology blue) with comfortable line heights (`1.65`–`1.75`).
+4. Keep all portfolio content data-driven under `src/data/`.

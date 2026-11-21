@@ -1,0 +1,30 @@
+# .cursorrules — Ethan Arex V. Ilustre 3D Portfolio
+# Strict Anti-"AI Slop" Engineering, Readability, 3D PBR Character, and Copywriting Rules
+
+## 1. Zero "AI Slop" Copywriting Mandate
+- NEVER use clichéd AI filler phrases: "delve into", "testament to", "in today's fast-paced digital landscape", "cutting-edge synergy", "unleash", "elevate", "seamless tapestry", "passionate guru", or "ninja/rockstar developer".
+- NEVER fabricate metrics, fake proficiency percentages (e.g., "React 95%"), unverified awards, or invented graduation dates.
+- NEVER claim in-progress projects (such as `PhishNot`) are finished production security guarantees. Always represent `PhishNot` as a BSIT Capstone Project currently under development that provides decision support.
+- Write concrete, verifiable technical descriptions rooted in actual architectures (e.g., "Client-side ephemeris using `astronomy-engine` and IAU/IAG WGCCRE 2009 Moon rotation series with optional FastAPI REST endpoints").
+- Maintain Ethan Arex V. Ilustre's authentic voice and core philosophy:
+  - "I always love creating solutions to problems."
+  - "I turn problems into solutions."
+  - "Building ideas. Solving problems. Creating possibilities."
+  - "I don't just write code. I identify problems, develop solutions, and turn ideas into reality."
+
+## 2. Readability & Zero 3D-to-Text Overlap Rule (CRITICAL)
+- In **01. HOME (`#hero`)**, the 3D Deku Bust (`/models/deku/source/fortnite_deku.glb`) occupies the open center 4 columns (`lg:col-span-4`) flanked symmetrically by the left (`lg:col-span-4`) and right (`lg:col-span-4`) typography blocks.
+- When scrolling down into **02. ABOUT**, **03. ARSENAL**, **04. PROJECTS**, **05. CERTIFICATES**, **06. JOURNEY**, or **07. CONTACT**, the 3D Deku character and its bright teal backlight halo MUST fade out behind the dark `#050807` scroll readability curtain (`scrollCurtainRef` in `HeroScene.tsx`) and hide `characterController.rootGroup.visible` so the 3D character NEVER sits behind or obscures any section title, description text, or card.
+- Use high-contrast `#FFFFFF` for headings, `#D5E2DC` for body paragraphs (`line-height: 1.75`), `#00E676` for primary emerald accents, and `#72B8FF` for technology blue.
+- Keep the Navbar at `h-20` (`80px`) with `[EAI]` + `ETHAN AREX V. ILUSTRE` + `SOLUTIONS ARCHITECT • BSIT STUDENT` cleanly aligned on the left and never colliding with navigation links.
+
+## 3. Three.js Smooth Stylized 3D PBR Character & Animation Rules
+- Single 3D Rendering Stack: Use modular native Three.js (`src/scenes/`) with `WebGLRenderer`, `EffectComposer`, `UnrealBloomPass` (high threshold `0.88`), `GLTFLoader`, `AnimationMixer`, `ShaderMaterial`, and `BufferGeometry`.
+- Upgrade unlit GLB materials (`KHR_materials_unlit`) in `CharacterController.tsx` using welded vertex normals (`computeSmoothSkinnedNormals`), 2D comic ink-line smoothing (`createSmoothedSuitTexture`), and `THREE.MeshPhysicalMaterial` with micro-pore bump texture (`createMicroPoreBumpTexture`).
+- Preserve rest bone quaternions (`headRestQuat`, `neckRestQuat`, `chestRestQuat`, `gogglesRestQuat`, `leftEyeRestQuat`, `rightEyeRestQuat`) and pose `L_arm_EX_0118_191` / `R_arm_EX_0152_236` in harmony with `L_arm_086_149` / `R_arm_0120_194` for crease-free shoulders.
+- Always call `renderer.setPixelRatio(...)` BEFORE `renderer.setSize(...)` and dispose all geometries, materials, and textures on unmount.
+
+## 4. Agent Skills Reference
+- `.agent/skills/bespoke-3d-ui/SKILL.md`
+- `.agent/skills/threejs-pbr-character/SKILL.md`
+- `.agent/skills/readability-and-contrast/SKILL.md`
