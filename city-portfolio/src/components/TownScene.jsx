@@ -4,6 +4,7 @@ import { Environment, Sky, useGLTF } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import {
+  IS_TOUCH_DEVICE,
   TOWN_BUILDINGS,
   TOWN_BOUNDS,
   cameraOrbit,
@@ -130,6 +131,8 @@ export default function TownScene() {
   const { scene } = useGLTF('/models/town.glb');
   const { camera } = useThree();
   const quality = useStore((s) => s.quality);
+  const deviceMode = useStore((s) => s.deviceMode);
+  const isTouchMode = deviceMode === 'mobile' || (deviceMode === null && IS_TOUCH_DEVICE);
   const townRootRef = useRef();
   const foliageOccludersRef = useRef([]);
 
@@ -331,8 +334,8 @@ export default function TownScene() {
       {/* Click-to-Move Target Pulse Marker */}
       <NavTargetMarker />
 
-      {/* GTA Atmospheric Post-Processing */}
-      {quality !== 'low' && (
+      {/* GTA Atmospheric Post-Processing (skipped on Low or Touch Balanced for locked 60fps mobile/tablet performance) */}
+      {(quality === 'high' || (quality === 'balanced' && !isTouchMode)) && (
         <EffectComposer disableNormalPass multisampling={quality === 'high' ? 4 : 0}>
           <Bloom mipmapBlur intensity={0.36} luminanceThreshold={0.86} />
           <Vignette darkness={0.34} />

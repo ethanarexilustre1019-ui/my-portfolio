@@ -6,7 +6,7 @@ import DekuController from './components/DekuController';
 import BuildingTriggers from './components/BuildingTriggers';
 import InteriorGallery from './components/InteriorGallery';
 import HUD from './components/HUD';
-import { input, useStore } from './state';
+import { IS_TOUCH_DEVICE, audioService, input, useStore } from './state';
 
 const KEYMAP = {
   w: 'forward',
@@ -31,6 +31,7 @@ const KEYMAP = {
 export default function App() {
   const sceneMode = useStore((s) => s.sceneMode);
   const quality = useStore((s) => s.quality);
+  const deviceMode = useStore((s) => s.deviceMode);
   const portalRef = useRef(null);
 
   useEffect(() => {
@@ -73,28 +74,50 @@ export default function App() {
       });
     };
 
+    const unlockAudio = () => {
+      if (useStore.getState().soundEnabled) {
+        audioService.setEnabled(true);
+      }
+      window.removeEventListener('pointerdown', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+    };
+
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
     window.addEventListener('blur', onBlur);
+    window.addEventListener('pointerdown', unlockAudio, { passive: true });
+    window.addEventListener('touchstart', unlockAudio, { passive: true });
     return () => {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('blur', onBlur);
+      window.removeEventListener('pointerdown', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
     };
   }, []);
 
+  const isTouchLayout = deviceMode === 'mobile' || (deviceMode === null && IS_TOUCH_DEVICE);
+  const dprRange =
+    quality === 'low'
+      ? [1, 1]
+      : isTouchLayout
+      ? [1, 1.35]
+      : quality === 'high'
+      ? [1, 2]
+      : [1, 1.5];
+
   return (
-    <div className="fixed inset-0 bg-[#0a0f0d]">
+    <div className="fixed inset-0 h-[100dvh] w-full bg-[#0a0f0d] touch-none select-none overflow-hidden">
       {/* Dedicated DOM Portal outside <canvas> for @react-three/drei <Html> Building Signs */}
       <div
         ref={portalRef}
         className="pointer-events-none fixed inset-0 z-10 overflow-hidden"
-        style={{ display: sceneMode === 'town' ? 'block' : 'none' }}
+        style={{ display: sceneMode === 'town' && deviceMode !== null ? 'block' : 'none' }}
       />
 
       <Canvas
         shadows={quality !== 'low'}
-        dpr={quality === 'high' ? [1, 2] : quality === 'balanced' ? [1, 1.5] : [1, 1]}
+        dpr={dprRange}
         camera={{ fov: 52, near: 0.1, far: 280, position: [0, 4.0, 5.5] }}
         gl={{
           antialias: quality !== 'low',

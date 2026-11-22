@@ -95,7 +95,7 @@ export default function DekuController({
   colliders = null,
   onDoorThreshold = null,
 }) {
-  const { camera, gl } = useThree();
+  const { camera, gl, size } = useThree();
   const rootRef = useRef();
   const bodyBounceRef = useRef();
   const auraRingsRef = useRef([]);
@@ -223,56 +223,97 @@ export default function DekuController({
     camTargetRef.current.initialized = false;
   }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Mouse-Drag Orbit Camera (left or right drag) + Scroll-Wheel Zoom
+  // Multi-Touch & Mouse Orbit Camera (tracks per-pointerId so left-thumb joystick + right-thumb camera look work simultaneously!) + Pinch / Scroll Zoom
   useEffect(() => {
     const dom = gl.domElement;
     if (!dom) return;
 
-    let pointerDown = false;
-    let startX = 0;
-    let startY = 0;
-    let lastX = 0;
-    let lastY = 0;
+    const activePointers = new Map();
+    let prevPinchDist = null;
+    let movedMax = 0;
+
+    const getPinchDistance = () => {
+      if (activePointers.size < 2) return null;
+      const pts = Array.from(activePointers.values());
+      return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    };
 
     const onPointerDown = (e) => {
-      if (e.button !== 0 && e.button !== 2) return;
-      pointerDown = true;
-      startX = lastX = e.clientX;
-      startY = lastY = e.clientY;
-      cameraOrbit.isDragging = false;
+      if (e.pointerType === 'mouse' && e.button !== 0 && e.button !== 2) return;
+      activePointers.set(e.pointerId, {
+        x: e.clientX,
+        y: e.clientY,
+        startX: e.clientX,
+        startY: e.clientY,
+      });
+      if (activePointers.size === 2) {
+        prevPinchDist = getPinchDistance();
+        cameraOrbit.isDragging = true;
+      } else if (activePointers.size === 1) {
+        movedMax = 0;
+        cameraOrbit.isDragging = false;
+      }
     };
 
     const onPointerMove = (e) => {
-      if (!pointerDown) return;
-      const dx = e.clientX - lastX;
-      const dy = e.clientY - lastY;
-      lastX = e.clientX;
-      lastY = e.clientY;
+      const entry = activePointers.get(e.pointerId);
+      if (!entry) return;
 
-      if (Math.hypot(e.clientX - startX, e.clientY - startY) > 5) {
+      const dx = e.clientX - entry.x;
+      const dy = e.clientY - entry.y;
+      entry.x = e.clientX;
+      entry.y = e.clientY;
+
+      if (activePointers.size === 2) {
+        const curPinch = getPinchDistance();
+        if (curPinch !== null && prevPinchDist !== null) {
+          const delta = prevPinchDist - curPinch;
+          cameraOrbit.distance = THREE.MathUtils.clamp(
+            cameraOrbit.distance + delta * 0.018,
+            2.6,
+            11.5
+          );
+        }
+        prevPinchDist = curPinch;
+        cameraOrbit.isDragging = true;
+        return;
+      }
+
+      movedMax = Math.max(
+        movedMax,
+        Math.hypot(e.clientX - entry.startX, e.clientY - entry.startY)
+      );
+      if (movedMax > 6) {
         cameraOrbit.isDragging = true;
       }
 
-      cameraOrbit.yaw -= dx * 0.0065;
+      const sensitivity = e.pointerType === 'touch' ? 0.008 : 0.0065;
+      cameraOrbit.yaw -= dx * sensitivity;
       cameraOrbit.pitch = THREE.MathUtils.clamp(
-        cameraOrbit.pitch + dy * 0.005,
+        cameraOrbit.pitch + dy * (sensitivity * 0.8),
         0.08,
         1.05
       );
     };
 
-    const onPointerUp = () => {
-      pointerDown = false;
-      setTimeout(() => {
-        cameraOrbit.isDragging = false;
-      }, 40);
+    const onPointerUp = (e) => {
+      if (!activePointers.has(e.pointerId)) return;
+      activePointers.delete(e.pointerId);
+      if (activePointers.size < 2) {
+        prevPinchDist = null;
+      }
+      if (activePointers.size === 0) {
+        setTimeout(() => {
+          cameraOrbit.isDragging = false;
+        }, 45);
+      }
     };
 
     const onWheel = (e) => {
       cameraOrbit.distance = THREE.MathUtils.clamp(
         cameraOrbit.distance + e.deltaY * 0.004,
-        2.8,
-        10.5
+        2.6,
+        11.5
       );
     };
 
@@ -281,6 +322,7 @@ export default function DekuController({
     dom.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
     dom.addEventListener('wheel', onWheel, { passive: true });
     dom.addEventListener('contextmenu', onContextMenu);
 
@@ -288,6 +330,7 @@ export default function DekuController({
       dom.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
       dom.removeEventListener('wheel', onWheel);
       dom.removeEventListener('contextmenu', onContextMenu);
     };
@@ -298,6 +341,7 @@ export default function DekuController({
     const store = useStore.getState();
     const cinematic = store.cinematic;
     const locked =
+      !store.deviceMode ||
       store.transitioning ||
       Boolean(store.activePanel) ||
       Boolean(store.focusFrame) ||
@@ -344,10 +388,13 @@ export default function DekuController({
           }
         }
       } else if (!locked) {
-        const fwdInput = (input.forward ? 1 : 0) - (input.back ? 1 : 0);
-        const strafeInput = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+        const keyFwd = (input.forward ? 1 : 0) - (input.back ? 1 : 0);
+        const keyStrafe = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+        const fwdInput = Math.abs(input.joyY) > 0.08 ? input.joyY : keyFwd;
+        const strafeInput = Math.abs(input.joyX) > 0.08 ? input.joyX : keyStrafe;
+        const inputMag = Math.min(1, Math.hypot(fwdInput, strafeInput));
 
-        if (fwdInput !== 0 || strafeInput !== 0) {
+        if (inputMag > 0.08) {
           nav.target = null;
           isManualMoving = true;
         }
@@ -396,7 +443,8 @@ export default function DekuController({
           activeMoveDirZ = rawZ / len;
 
           targetHeading = Math.atan2(activeMoveDirX, activeMoveDirZ);
-          targetSpeed = input.run || store.rageMode ? 9.0 : 5.8;
+          const baseMoveSpeed = input.run || store.rageMode ? 9.0 : 5.8;
+          targetSpeed = baseMoveSpeed * Math.max(0.35, inputMag);
 
           anim.currentSpeed = THREE.MathUtils.lerp(anim.currentSpeed, targetSpeed, dt * 9.5);
           st.pos.x += activeMoveDirX * anim.currentSpeed * dt;
@@ -791,15 +839,18 @@ export default function DekuController({
     }
 
     // -------------------------------------------------------------------------
-    // Dynamic GTA Camera (On-Foot Over-the-Shoulder + Vehicle Chase Camera)
+    // Dynamic GTA Camera (Responsive to Mobile Portrait, Tablet Landscape & Desktop)
     // -------------------------------------------------------------------------
+    const isPortrait = size.width / Math.max(1, size.height) < 0.85;
     const isHighSpeed =
       st.isDriving ? st.speed > 7.5 : (input.run || store.rageMode) && st.speed > 0.5;
-    const targetFov = st.isDriving
-      ? 54 + Math.min(12, st.speed * 0.55)
-      : isHighSpeed
-      ? 62
-      : 52;
+    const portraitFovBoost = isPortrait ? 8 : 0;
+    const targetFov =
+      (st.isDriving
+        ? 54 + Math.min(12, st.speed * 0.55)
+        : isHighSpeed
+        ? 62
+        : 52) + portraitFovBoost;
     if (camera.fov !== undefined && Math.abs(camera.fov - targetFov) > 0.05) {
       camera.fov += (targetFov - camera.fov) * Math.min(1, dt * 6.0);
       camera.updateProjectionMatrix();
@@ -812,7 +863,8 @@ export default function DekuController({
       const [fx, fy, fz] = focus.position;
       const nx = Math.sin(focus.rotY);
       const nz = Math.cos(focus.rotY);
-      camState.pos.set(fx + nx * 3.7, fy + 0.05, fz + nz * 3.7);
+      const focusDist = isPortrait ? 4.9 : 3.7;
+      camState.pos.set(fx + nx * focusDist, fy + 0.05, fz + nz * focusDist);
       camState.look.set(fx, fy, fz);
     } else if (cinematic?.active) {
       const b = TOWN_BUILDINGS.find((x) => x.id === cinematic.buildingId);
@@ -821,9 +873,9 @@ export default function DekuController({
         const rightX = -dirZ;
         const rightZ = dirX;
         camState.pos.set(
-          b.door[0] - dirX * 3.5 + rightX * 0.65,
+          b.door[0] - dirX * (isPortrait ? 4.2 : 3.5) + rightX * (isPortrait ? 0.3 : 0.65),
           1.32,
-          b.door[2] - dirZ * 3.5 + rightZ * 0.65
+          b.door[2] - dirZ * (isPortrait ? 4.2 : 3.5) + rightZ * (isPortrait ? 0.3 : 0.65)
         );
         camState.look.set(
           b.door[0] + dirX * 0.45,
@@ -838,7 +890,8 @@ export default function DekuController({
         const yawDiff = wrapAngle(desiredYaw - cameraOrbit.yaw);
         cameraOrbit.yaw += yawDiff * Math.min(1, dt * 3.8);
       }
-      const dist = Math.max(5.8, cameraOrbit.distance * 1.32) + st.speed * 0.08;
+      const dist =
+        Math.max(isPortrait ? 6.6 : 5.8, cameraOrbit.distance * 1.32) + st.speed * 0.08;
       const pitch = Math.max(0.22, cameraOrbit.pitch);
       const yaw = cameraOrbit.yaw;
       const horizDist = dist * Math.cos(pitch);
@@ -853,8 +906,8 @@ export default function DekuController({
     } else {
       const baseDist =
         mode === 'interior'
-          ? Math.min(cameraOrbit.distance, 3.8)
-          : Math.min(cameraOrbit.distance, 4.1);
+          ? Math.min(cameraOrbit.distance, isPortrait ? 4.4 : 3.8)
+          : Math.min(cameraOrbit.distance, isPortrait ? 4.7 : 4.1);
       const dist = isHighSpeed ? baseDist * 1.12 : baseDist;
       const pitch = cameraOrbit.pitch;
       const yaw = cameraOrbit.yaw;
@@ -862,7 +915,7 @@ export default function DekuController({
       const horizDist = dist * Math.cos(pitch);
       const vertDist = dist * Math.sin(pitch) + 0.92;
 
-      const shoulderOffset = mode === 'interior' ? 0.16 : 0.28;
+      const shoulderOffset = isPortrait ? 0.08 : mode === 'interior' ? 0.16 : 0.28;
       const shoulderX = Math.cos(yaw) * shoulderOffset;
       const shoulderZ = -Math.sin(yaw) * shoulderOffset;
 

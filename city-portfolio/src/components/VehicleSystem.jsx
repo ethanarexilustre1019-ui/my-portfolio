@@ -418,12 +418,25 @@ export default function VehicleSystem() {
 
     const refs = carRefs.current[car.id];
     const locked =
-      store.transitioning || Boolean(store.activePanel) || store.cinematic?.active;
+      !store.deviceMode ||
+      store.transitioning ||
+      Boolean(store.activePanel) ||
+      store.cinematic?.active;
 
-    const throttle = !locked && input.forward ? 1 : 0;
-    const brakeRev = !locked && input.back ? 1 : 0;
-    const steerInput =
-      (!locked && input.left ? 1 : 0) - (!locked && input.right ? 1 : 0);
+    const throttle =
+      !locked && (input.forward || input.joyY > 0.15)
+        ? Math.max(input.forward ? 1 : 0, input.joyY)
+        : 0;
+    const brakeRev =
+      !locked && (input.back || input.joyY < -0.18)
+        ? Math.max(input.back ? 1 : 0, -input.joyY)
+        : 0;
+    const keySteer = (input.left ? 1 : 0) - (input.right ? 1 : 0);
+    const steerInput = !locked
+      ? Math.abs(input.joyX) > 0.08
+        ? -input.joyX
+        : keySteer
+      : 0;
     const handbrake = !locked && input.jump;
     const boost = !locked && (input.run || store.rageMode);
 

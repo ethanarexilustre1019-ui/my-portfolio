@@ -149,12 +149,19 @@ export const TOWN_BOUNDS = {
   maxZ: 36,
 };
 
+export const IS_TOUCH_DEVICE =
+  typeof window !== 'undefined' &&
+  (Boolean(window.matchMedia?.('(pointer: coarse)')?.matches) ||
+    (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0));
+
 // Shared mutable per-frame game state (no React re-renders on 60fps tick)
 export const input = {
   forward: false,
   back: false,
   left: false,
   right: false,
+  joyX: 0, // Analog horizontal (-1 left .. +1 right) from mobile virtual joystick
+  joyY: 0, // Analog vertical (-1 down/back .. +1 up/forward) from mobile virtual joystick
   run: false,
   jump: false,
 };
@@ -419,6 +426,8 @@ function clearInputs() {
   input.back = false;
   input.left = false;
   input.right = false;
+  input.joyX = 0;
+  input.joyY = 0;
   input.run = false;
   input.jump = false;
 }
@@ -437,6 +446,7 @@ export const useStore = create((set, get) => ({
   rageMode: false,
   soundEnabled: true,
   quality: 'balanced', // 'low' | 'balanced' | 'high'
+  deviceMode: null, // null (welcome screen) | 'mobile' (phone/tablet/iPad) | 'desktop' (PC/Mac)
   isDriving: false,
   activeCarName: '',
   nearCarPrompt: null, // null | { id, name, accent }
@@ -507,6 +517,15 @@ export const useStore = create((set, get) => ({
       activeCarName: bestCar.name,
       nearCarPrompt: null,
     });
+  },
+
+  selectDeviceMode(mode) {
+    clearInputs();
+    if (get().soundEnabled) {
+      audioService.setEnabled(true);
+    }
+    audioService.playSurgeChime();
+    set({ deviceMode: mode });
   },
 
   setQuality(quality) {

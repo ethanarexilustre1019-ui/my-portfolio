@@ -18,6 +18,7 @@ import {
   validateContactForm,
 } from '../../../src/services/contactService';
 import { frameDataUrl, readImageFile } from '../textures';
+import WelcomeOverlay from './WelcomeOverlay';
 
 const NAV_ITEMS = [
   { id: 'hero', label: 'HOME', sheet: '01', sheetTitle: '3D TOWN HUB' },
@@ -29,7 +30,7 @@ const NAV_ITEMS = [
   { id: 'contact', label: 'CONTACT', sheet: '07', sheetTitle: 'COMMUNICATIONS HUB' },
 ];
 
-function TownMinimap() {
+function TownMinimap({ isMobileMode }) {
   const dotRef = useRef();
   const drivableRefs = useRef([]);
   const npcRefs = useRef([]);
@@ -67,8 +68,16 @@ function TownMinimap() {
   }, []);
 
   return (
-    <div className="pointer-events-auto absolute bottom-12 left-4 hidden sm:flex flex-col items-center font-mono">
-      <div className="relative h-44 w-44 rounded-full border-2 border-[#00ff88]/50 bg-[#060b09]/92 p-1.5 shadow-[0_0_28px_rgba(0,255,136,0.22)] backdrop-blur-md">
+    <div
+      className={`pointer-events-auto absolute flex flex-col items-center font-mono ${
+        isMobileMode ? 'top-24 right-3' : 'bottom-12 left-4 hidden sm:flex'
+      }`}
+    >
+      <div
+        className={`relative rounded-full border-2 border-[#00ff88]/50 bg-[#060b09]/92 p-1 shadow-[0_0_28px_rgba(0,255,136,0.22)] backdrop-blur-md ${
+          isMobileMode ? 'h-24 w-24 sm:h-32 sm:w-32' : 'h-44 w-44 p-1.5'
+        }`}
+      >
         {/* North Compass Badge */}
         <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-[2px] border border-[#00ff88]/60 bg-[#050807] px-1.5 py-0.2 text-[9px] font-bold tracking-widest text-[#00ff88]">
           N
@@ -169,14 +178,18 @@ function TownMinimap() {
           </g>
         </svg>
       </div>
-      <div className="mt-1 rounded-[2px] border border-white/10 bg-[#0a0f0d]/90 px-2.5 py-0.5 text-[9px] tracking-[0.18em] uppercase text-[#8FA198]">
-        GTA RADAR &bull; CLICK BLDG
+      <div
+        className={`mt-1 rounded-[2px] border border-white/10 bg-[#0a0f0d]/90 px-2 py-0.5 uppercase text-[#8FA198] ${
+          isMobileMode ? 'text-[8px] tracking-[0.12em]' : 'px-2.5 text-[9px] tracking-[0.18em]'
+        }`}
+      >
+        {isMobileMode ? 'TAP BLDG' : 'GTA RADAR • CLICK BLDG'}
       </div>
     </div>
   );
 }
 
-function DigitalSpeedometer() {
+function DigitalSpeedometer({ isMobileMode }) {
   const isDriving = useStore((s) => s.isDriving);
   const activeCarName = useStore((s) => s.activeCarName);
   const toggleDrive = useStore((s) => s.toggleDrive);
@@ -205,82 +218,241 @@ function DigitalSpeedometer() {
   if (!isDriving) return null;
 
   return (
-    <div className="pointer-events-auto absolute bottom-12 right-4 rounded-[4px] border border-[#00ff88]/50 bg-[#0a0f0d]/92 p-3.5 shadow-2xl backdrop-blur-md font-mono w-56">
-      <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.16em] text-[#00ff88]">
-        <span>{activeCarName || 'GTA VEHICLE'}</span>
-        <span className="rounded-[2px] bg-[#00ff88]/15 px-1.5 py-0.5 text-[#00ff88]">
-          GEAR <strong ref={gearRef}>N</strong>
+    <div
+      className={`pointer-events-auto absolute rounded-[4px] border border-[#00ff88]/50 bg-[#0a0f0d]/92 shadow-2xl backdrop-blur-md font-mono ${
+        isMobileMode ? 'top-24 left-3 w-40 p-2.5' : 'bottom-12 right-4 w-56 p-3.5'
+      }`}
+    >
+      <div className="flex items-center justify-between gap-1 text-[9px] sm:text-[10px] uppercase tracking-[0.12em] text-[#00ff88]">
+        <span className="truncate">{activeCarName || 'GTA VEHICLE'}</span>
+        <span className="shrink-0 rounded-[2px] bg-[#00ff88]/15 px-1.5 py-0.5 text-[#00ff88]">
+          G <strong ref={gearRef}>N</strong>
         </span>
       </div>
-      <div className="mt-1.5 flex items-baseline justify-between">
+      <div className="mt-1 flex items-baseline justify-between">
         <span
           ref={speedRef}
-          className="font-heading text-4xl font-black tracking-wider text-white"
+          className={`font-heading font-black tracking-wider text-white ${
+            isMobileMode ? 'text-2xl sm:text-3xl' : 'text-4xl'
+          }`}
         >
           000
         </span>
-        <span className="text-xs font-bold tracking-[0.2em] text-[#8FA198]">
+        <span className="text-[10px] sm:text-xs font-bold tracking-[0.18em] text-[#8FA198]">
           KM/H
         </span>
       </div>
-      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
         <div
           ref={barRef}
           className="h-full bg-[#00ff88] transition-all duration-75"
           style={{ width: '0%' }}
         />
       </div>
-      <button
-        type="button"
-        onClick={toggleDrive}
-        className="mt-3 w-full rounded-[3px] border border-[#00ff88]/50 bg-[#00ff88]/15 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#00ff88] hover:bg-[#00ff88] hover:text-[#050807] transition-colors cursor-pointer"
-      >
-        [F] EXIT VEHICLE
-      </button>
+      {!isMobileMode && (
+        <button
+          type="button"
+          onClick={toggleDrive}
+          className="mt-3 w-full rounded-[3px] border border-[#00ff88]/50 bg-[#00ff88]/15 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#00ff88] hover:bg-[#00ff88] hover:text-[#050807] transition-colors cursor-pointer"
+        >
+          [F] EXIT VEHICLE
+        </button>
+      )}
     </div>
   );
 }
 
-function TouchControls() {
-  const press = (key, val) => (e) => {
-    e.preventDefault();
-    input[key] = val;
+/**
+ * 360° Virtual Analog Joystick + Ergonomic Right-Thumb Action Buttons
+ * Shown in Phone / Tablet / iPad Touch Mode (Android, iOS, iPadOS).
+ */
+function TouchControls({ isDriving, nearCarPrompt, toggleDrive }) {
+  const stickZoneRef = useRef(null);
+  const activeStickIdRef = useRef(null);
+  const [knobOffset, setKnobOffset] = useState({ x: 0, y: 0 });
+  const [sprinting, setSprinting] = useState(false);
+
+  const maxRadius = 38;
+
+  const updateStickFromPointer = (clientX, clientY) => {
+    const el = stickZoneRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    let dx = clientX - cx;
+    let dy = clientY - cy;
+    const dist = Math.hypot(dx, dy);
+    if (dist > maxRadius) {
+      dx = (dx / dist) * maxRadius;
+      dy = (dy / dist) * maxRadius;
+    }
+    setKnobOffset({ x: dx, y: dy });
+    // Normalize to -1..+1 (joyY positive = up/forward)
+    input.joyX = dx / maxRadius;
+    input.joyY = -dy / maxRadius;
   };
 
-  const btn = (key, label) => (
-    <button
-      type="button"
-      onPointerDown={press(key, true)}
-      onPointerUp={press(key, false)}
-      onPointerLeave={press(key, false)}
-      onPointerCancel={press(key, false)}
-      onContextMenu={(e) => e.preventDefault()}
-      className="pointer-events-auto flex h-11 w-11 select-none items-center justify-center rounded-[3px] border border-[#00ff88]/40 bg-[#0a0f0d]/85 font-mono text-base font-bold text-[#00ff88] backdrop-blur-md active:bg-[#00ff88] active:text-[#050807]"
-    >
-      {label}
-    </button>
-  );
+  const resetStick = () => {
+    activeStickIdRef.current = null;
+    setKnobOffset({ x: 0, y: 0 });
+    input.joyX = 0;
+    input.joyY = 0;
+  };
+
+  const onStickDown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    activeStickIdRef.current = e.pointerId;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* ignore capture errors */
+    }
+    updateStickFromPointer(e.clientX, e.clientY);
+  };
+
+  const onStickMove = (e) => {
+    if (activeStickIdRef.current !== e.pointerId) return;
+    e.preventDefault();
+    updateStickFromPointer(e.clientX, e.clientY);
+  };
+
+  const onStickUp = (e) => {
+    if (activeStickIdRef.current !== e.pointerId) return;
+    resetStick();
+  };
+
+  useEffect(() => {
+    return () => {
+      input.joyX = 0;
+      input.joyY = 0;
+      input.run = false;
+      input.jump = false;
+    };
+  }, []);
 
   return (
-    <div className="absolute bottom-14 left-4 flex items-end gap-3 md:hidden [@media(pointer:coarse)]:flex">
-      <div className="grid grid-cols-3 gap-1.5">
-        <span />
-        {btn('forward', 'W')}
-        <span />
-        {btn('left', 'A')}
-        {btn('back', 'S')}
-        {btn('right', 'D')}
-      </div>
-      <button
-        type="button"
-        onPointerDown={() => {
-          input.jump = true;
-        }}
-        className="pointer-events-auto h-11 px-3 rounded-[3px] border border-[#00ff88]/50 bg-[#0a0f0d]/85 font-mono text-xs font-bold uppercase tracking-wider text-[#00ff88] active:bg-[#00ff88] active:text-[#050807]"
+    <>
+      {/* Left Thumb: Smooth 360° Virtual Analog Joystick */}
+      <div
+        className="pointer-events-auto touch-pad fixed left-4 sm:left-6 bottom-[max(1rem,env(safe-area-inset-bottom))] flex flex-col items-center gap-1"
       >
-        JUMP
-      </button>
-    </div>
+        <div
+          ref={stickZoneRef}
+          onPointerDown={onStickDown}
+          onPointerMove={onStickMove}
+          onPointerUp={onStickUp}
+          onPointerCancel={onStickUp}
+          onContextMenu={(e) => e.preventDefault()}
+          className="relative flex h-28 w-28 sm:h-32 sm:w-32 items-center justify-center rounded-full border-2 border-[#00ff88]/45 bg-[#060b09]/70 shadow-[0_0_24px_rgba(0,255,136,0.2)] backdrop-blur-md"
+        >
+          {/* Inner Crosshair Ring */}
+          <div className="pointer-events-none h-14 w-14 rounded-full border border-[#00ff88]/20" />
+          {/* Cardinal Arrows */}
+          <span className="pointer-events-none absolute top-1.5 text-[9px] font-mono font-bold text-[#00ff88]/60">
+            ▲
+          </span>
+          <span className="pointer-events-none absolute bottom-1.5 text-[9px] font-mono font-bold text-[#00ff88]/60">
+            ▼
+          </span>
+          <span className="pointer-events-none absolute left-2 text-[9px] font-mono font-bold text-[#00ff88]/60">
+            ◀
+          </span>
+          <span className="pointer-events-none absolute right-2 text-[9px] font-mono font-bold text-[#00ff88]/60">
+            ▶
+          </span>
+          {/* Draggable Analog Thumb Knob */}
+          <div
+            className="pointer-events-none flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/80 bg-[#00ff88]/85 shadow-[0_0_16px_rgba(0,255,136,0.6)]"
+            style={{
+              transform: `translate(${knobOffset.x}px, ${knobOffset.y}px)`,
+            }}
+          >
+            <div className="h-3 w-3 rounded-full bg-[#050807]" />
+          </div>
+        </div>
+        <span className="pointer-events-none font-mono text-[9px] uppercase tracking-[0.16em] text-[#8FA198]">
+          {isDriving ? 'STEER / GAS' : 'MOVE STICK'}
+        </span>
+      </div>
+
+      {/* Right Thumb: Ergonomic Action Cluster (Drive/Exit + Boost + Jump/Drift) */}
+      <div className="pointer-events-auto touch-pad fixed right-4 sm:right-6 bottom-[max(1rem,env(safe-area-inset-bottom))] flex flex-col items-end gap-2.5">
+        {/* Contextual Vehicle Enter / Exit Button */}
+        {(isDriving || nearCarPrompt) && (
+          <button
+            type="button"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              toggleDrive();
+            }}
+            className="flex h-11 items-center gap-1.5 rounded-[4px] border-2 border-[#ffd24a] bg-[#0a0f0d]/92 px-3.5 font-mono text-xs font-bold uppercase tracking-wider text-[#ffd24a] shadow-[0_0_18px_rgba(255,210,74,0.35)] active:bg-[#ffd24a] active:text-[#050807]"
+          >
+            <span>{isDriving ? '🚪 EXIT CAR' : '🚗 DRIVE CAR'}</span>
+          </button>
+        )}
+
+        <div className="flex items-end gap-2.5">
+          {/* Hold for Sprint (on foot) / Nitro Boost (driving) */}
+          <button
+            type="button"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              input.run = true;
+              setSprinting(true);
+            }}
+            onPointerUp={() => {
+              input.run = false;
+              setSprinting(false);
+            }}
+            onPointerLeave={() => {
+              input.run = false;
+              setSprinting(false);
+            }}
+            onPointerCancel={() => {
+              input.run = false;
+              setSprinting(false);
+            }}
+            onContextMenu={(e) => e.preventDefault()}
+            className={`flex h-14 w-16 sm:h-16 sm:w-20 flex-col items-center justify-center rounded-full border-2 font-mono text-[10px] font-bold uppercase tracking-wider backdrop-blur-md transition-colors ${
+              sprinting
+                ? 'border-white bg-[#00ff88] text-[#050807] shadow-[0_0_20px_rgba(0,255,136,0.6)]'
+                : 'border-[#00ff88]/50 bg-[#060b09]/80 text-[#00ff88]'
+            }`}
+          >
+            <span className="text-base leading-none">⚡</span>
+            <span className="mt-0.5">{isDriving ? 'NITRO' : 'SPRINT'}</span>
+          </button>
+
+          {/* Tap for Jump (on foot) / Hold for Handbrake Drift (driving) */}
+          <button
+            type="button"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              input.jump = true;
+            }}
+            onPointerUp={() => {
+              if (isDriving) input.jump = false;
+            }}
+            onPointerLeave={() => {
+              if (isDriving) input.jump = false;
+            }}
+            onPointerCancel={() => {
+              input.jump = false;
+            }}
+            onContextMenu={(e) => e.preventDefault()}
+            className="flex h-16 w-16 sm:h-20 sm:w-20 flex-col items-center justify-center rounded-full border-2 border-[#00ff88] bg-[#00ff88]/20 font-mono text-[11px] font-black uppercase tracking-wider text-white shadow-[0_0_24px_rgba(0,255,136,0.3)] backdrop-blur-md active:bg-[#00ff88] active:text-[#050807]"
+          >
+            <span className="text-base leading-none">{isDriving ? '🛑' : '⬆'}</span>
+            <span className="mt-0.5">{isDriving ? 'DRIFT' : 'JUMP'}</span>
+          </button>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -339,7 +511,7 @@ function CertificateDetailModal() {
   };
 
   return (
-    <div className="pointer-events-auto absolute inset-x-3 bottom-4 max-h-[72vh] overflow-y-auto rounded-[4px] border border-[#00ff88]/50 bg-[#0a0f0d]/95 p-5 text-white shadow-2xl backdrop-blur-2xl md:inset-x-auto md:bottom-auto md:right-6 md:top-28 md:max-h-[80vh] md:w-[450px] font-sans">
+    <div className="pointer-events-auto fixed inset-x-2.5 bottom-3 z-30 max-h-[76dvh] overflow-y-auto rounded-[4px] border border-[#00ff88]/50 bg-[#0a0f0d]/96 p-4 sm:p-5 text-white shadow-2xl backdrop-blur-2xl md:inset-x-auto md:bottom-auto md:right-6 md:top-28 md:max-h-[80dvh] md:w-[450px] font-sans">
       <div className="mb-3 flex items-start justify-between gap-3 border-b border-white/10 pb-3">
         <div>
           <div className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#00ff88]">
@@ -425,7 +597,7 @@ function CertificateDetailModal() {
           <div className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#00ff88]">
             DIRECT DISPATCH TERMINAL
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div>
               <input
                 type="text"
@@ -1226,6 +1398,7 @@ export default function HUD() {
   const sceneMode = useStore((s) => s.sceneMode);
   const activeSection = useStore((s) => s.activeSection);
   const activePanel = useStore((s) => s.activePanel);
+  const deviceMode = useStore((s) => s.deviceMode);
   const rageMode = useStore((s) => s.rageMode);
   const soundEnabled = useStore((s) => s.soundEnabled);
   const quality = useStore((s) => s.quality);
@@ -1233,26 +1406,32 @@ export default function HUD() {
   const nearCarPrompt = useStore((s) => s.nearCarPrompt);
   const cinematic = useStore((s) => s.cinematic);
   const fade = useStore((s) => s.fade);
+  const selectDeviceMode = useStore((s) => s.selectDeviceMode);
   const toggleRageMode = useStore((s) => s.toggleRageMode);
   const toggleSound = useStore((s) => s.toggleSound);
   const setQuality = useStore((s) => s.setQuality);
   const toggleDrive = useStore((s) => s.toggleDrive);
   const exitAwardsGallery = useStore((s) => s.exitAwardsGallery);
 
+  const isMobileMode = deviceMode === 'mobile';
+  const showGameHUD = deviceMode !== null;
   const isCinematic = Boolean(cinematic?.active);
   const currentSheet =
     NAV_ITEMS.find((n) => n.id === activeSection) || NAV_ITEMS[0];
 
   return (
     <div className="pointer-events-none fixed inset-0 z-20 select-none text-[#F4F7F5]">
-      {/* Top Dark Tactical / Neon-Emerald Architectural Navbar (hidden during cinematic doorway cutscenes) */}
-      {!isCinematic && (
-        <header className="pointer-events-auto border-b border-white/10 bg-[#0a0f0d]/92 backdrop-blur-md">
-          <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-6">
+      {/* Pre-Entry Welcome & Device Selection Screen (Phone/Tablet vs PC/Desktop) */}
+      <WelcomeOverlay />
+
+      {/* Top Dark Tactical / Neon-Emerald Architectural Navbar */}
+      {showGameHUD && !isCinematic && (
+        <header className="pointer-events-auto border-b border-white/10 bg-[#0a0f0d]/92 backdrop-blur-md pt-[env(safe-area-inset-top)]">
+          <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-1.5 px-2.5 sm:h-16 sm:gap-2 sm:px-6">
             {/* Segmented Monospace Pill Navigation Bar */}
             <nav
               aria-label="Main portfolio navigation"
-              className="flex items-center gap-1 overflow-x-auto no-scrollbar rounded-[4px] border border-white/10 bg-[#060b09] p-1"
+              className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto no-scrollbar rounded-[4px] border border-white/10 bg-[#060b09] p-1"
             >
               {NAV_ITEMS.filter((item) => item.id !== 'contact').map((item) => {
                 const isActive = activeSection === item.id;
@@ -1261,7 +1440,7 @@ export default function HUD() {
                     key={item.id}
                     type="button"
                     onClick={() => walkToBuilding(item.id)}
-                    className={`rounded-[3px] px-2.5 sm:px-3.5 py-1.5 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.14em] whitespace-nowrap transition-all cursor-pointer ${
+                    className={`rounded-[3px] px-2 sm:px-3.5 py-1.5 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.12em] whitespace-nowrap transition-all cursor-pointer ${
                       isActive
                         ? 'bg-[#00ff88] text-[#050807] font-bold shadow-[0_0_14px_rgba(0,255,136,0.35)]'
                         : 'text-[#8FA198] hover:text-white'
@@ -1273,8 +1452,20 @@ export default function HUD() {
               })}
             </nav>
 
-            {/* Right Tactical Controls: GRAPHICS TIER, RAGE MODE, MHA AUDIO & CONTACT -> */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Right Tactical Controls: MODE SWITCH, GRAPHICS, RAGE, AUDIO, CONTACT */}
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => selectDeviceMode(isMobileMode ? 'desktop' : 'mobile')}
+                title="Switch between Phone/Tablet Touch Mode and PC Keyboard Mode"
+                className="rounded-[3px] border border-white/20 bg-[#060b09] px-2 py-1.5 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.08em] text-[#C5D3CC] hover:border-[#00ff88] hover:text-[#00ff88] transition-colors cursor-pointer"
+              >
+                {isMobileMode ? '📱' : '🖥️'}
+                <span className="hidden lg:inline ml-1">
+                  {isMobileMode ? 'TOUCH' : 'PC'}
+                </span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => {
@@ -1282,9 +1473,11 @@ export default function HUD() {
                   setQuality(next);
                 }}
                 title="Toggle Graphics Performance Quality (Ultra / Balanced / Low-End)"
-                className="rounded-[3px] border border-white/20 bg-[#060b09] px-2 sm:px-2.5 py-1.5 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.12em] text-[#C5D3CC] hover:border-[#00ff88] hover:text-[#00ff88] transition-colors cursor-pointer"
+                className="rounded-[3px] border border-white/20 bg-[#060b09] px-2 sm:px-2.5 py-1.5 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.08em] text-[#C5D3CC] hover:border-[#00ff88] hover:text-[#00ff88] transition-colors cursor-pointer"
               >
-                ⚡ {quality.toUpperCase()}
+                ⚡
+                <span className="hidden sm:inline ml-1">{quality.toUpperCase()}</span>
+                <span className="sm:hidden ml-0.5">{quality[0].toUpperCase()}</span>
               </button>
 
               <button
@@ -1292,13 +1485,16 @@ export default function HUD() {
                 onClick={toggleRageMode}
                 aria-pressed={rageMode}
                 title="Toggle Deku 100% One-For-All Rage Mode"
-                className={`rounded-[3px] border px-2.5 sm:px-3 py-1.5 font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.12em] transition-all cursor-pointer ${
+                className={`rounded-[3px] border px-2 sm:px-3 py-1.5 font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.08em] transition-all cursor-pointer ${
                   rageMode
                     ? 'border-white bg-[#00ff88] text-[#050807] shadow-[0_0_22px_rgba(0,255,136,0.55)]'
                     : 'border-[#00ff88]/45 bg-[#060b09] text-[#00ff88] hover:border-[#00ff88] hover:bg-[#00ff88]/10'
                 }`}
               >
-                ⚡ {rageMode ? 'RAGE: 100%' : 'RAGE MODE'}
+                🔥
+                <span className="hidden sm:inline ml-1">
+                  {rageMode ? 'RAGE: 100%' : 'RAGE'}
+                </span>
               </button>
 
               <button
@@ -1306,40 +1502,44 @@ export default function HUD() {
                 onClick={toggleSound}
                 aria-pressed={soundEnabled}
                 title="Toggle My Hero Academia Soundtrack & Sound Effects"
-                className={`hidden md:inline-flex rounded-[3px] border px-2.5 py-1.5 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.12em] transition-colors cursor-pointer ${
+                className={`rounded-[3px] border px-2 sm:px-2.5 py-1.5 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.08em] transition-colors cursor-pointer ${
                   soundEnabled
                     ? 'border-[#00ff88]/60 bg-[#00ff88]/10 text-[#00ff88]'
                     : 'border-white/15 bg-[#060b09] text-[#8FA198] hover:text-white'
                 }`}
               >
-                {soundEnabled ? '🔊 MHA AUDIO' : '🔇 MUTED'}
+                {soundEnabled ? '🔊' : '🔇'}
+                <span className="hidden lg:inline ml-1">
+                  {soundEnabled ? 'AUDIO' : 'MUTED'}
+                </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => walkToBuilding('contact')}
-                className="rounded-[3px] bg-[#F4F7F5] px-3 sm:px-4 py-1.5 font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.12em] text-[#050807] hover:bg-[#00ff88] transition-colors cursor-pointer"
+                className="rounded-[3px] bg-[#F4F7F5] px-2 sm:px-3.5 py-1.5 font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.08em] text-[#050807] hover:bg-[#00ff88] transition-colors cursor-pointer whitespace-nowrap"
               >
-                CONTACT &rarr;
+                <span className="hidden sm:inline">CONTACT &rarr;</span>
+                <span className="sm:hidden">MSG</span>
               </button>
             </div>
           </div>
 
           {/* Sub-Header Blueprint Strip: SHEET XX / 07 + Frame Profiler + NEGROS ISLAND REGION — PHILIPPINES */}
           <div className="border-t border-white/10 bg-[#050807]/95">
-            <div className="mx-auto flex h-8 max-w-7xl items-center justify-between px-3 sm:px-6 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-[#8FA198]">
-              <span className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#00ff88]" />
-                <span>
+            <div className="mx-auto flex h-7 sm:h-8 max-w-7xl items-center justify-between px-2.5 sm:px-6 font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.14em] sm:tracking-[0.2em] text-[#8FA198]">
+              <span className="flex items-center gap-1.5 truncate">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#00ff88]" />
+                <span className="truncate">
                   SHEET {currentSheet.sheet} / 07 &mdash;{' '}
                   <strong className="text-[#F4F7F5] font-semibold">
                     {currentSheet.sheetTitle}
                   </strong>
                 </span>
               </span>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 shrink-0">
                 <FrameProfilerBadge />
-                <span className="hidden sm:inline">
+                <span className="hidden md:inline">
                   NEGROS ISLAND REGION &mdash; PHILIPPINES
                 </span>
               </div>
@@ -1348,8 +1548,8 @@ export default function HUD() {
         </header>
       )}
 
-      {/* Top-Left Identity Badge / Quick Open Button on Town View */}
-      {sceneMode === 'town' && !activePanel && !isCinematic && (
+      {/* Top-Left Identity Badge / Quick Open Button on Desktop Town View */}
+      {showGameHUD && sceneMode === 'town' && !activePanel && !isCinematic && !isMobileMode && (
         <div className="pointer-events-auto absolute left-4 top-28 hidden lg:block rounded-[4px] border border-[#00ff88]/30 bg-[#0a0f0d]/88 p-3.5 backdrop-blur-md max-w-xs">
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#00ff88]">
             3D THIRD-PERSON PORTFOLIO
@@ -1375,39 +1575,57 @@ export default function HUD() {
         </div>
       )}
 
-      {/* Prominent "Exit to Town" Button inside 3D AWARDS Interior Gallery (placed at bottom-left so it never overlaps certificate frames) */}
-      {sceneMode === 'interior' && !isCinematic && (
+      {/* Prominent "Exit to Town" Button inside 3D Interior Halls (positioned cleanly above touch joystick on Mobile/Tablet) */}
+      {showGameHUD && sceneMode === 'interior' && !isCinematic && (
         <button
           type="button"
           onClick={exitAwardsGallery}
-          className="pointer-events-auto absolute left-4 bottom-14 rounded-[3px] border border-white bg-[#00ff88] px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#050807] shadow-[0_0_24px_rgba(0,255,136,0.45)] hover:bg-[#33ffa0] cursor-pointer"
+          className={`pointer-events-auto absolute rounded-[3px] border border-white bg-[#00ff88] px-3.5 py-2 sm:px-4 sm:py-2.5 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-[#050807] shadow-[0_0_24px_rgba(0,255,136,0.45)] hover:bg-[#33ffa0] cursor-pointer ${
+            isMobileMode ? 'left-3 top-24' : 'left-4 bottom-14'
+          }`}
         >
           ⬅ EXIT TO TOWN
         </button>
       )}
 
-      {/* "Press [F] to Drive" Floating Vehicle Entry Prompt */}
-      {sceneMode === 'town' && !activePanel && !isCinematic && !isDriving && nearCarPrompt && (
-        <button
-          type="button"
-          onClick={toggleDrive}
-          className="pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-2.5 rounded-[4px] border border-[#00ff88] bg-[#0a0f0d]/95 px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.14em] text-white shadow-[0_0_24px_rgba(0,255,136,0.4)] hover:bg-[#00ff88] hover:text-[#050807] transition-all cursor-pointer"
-        >
-          <span className="rounded-[2px] bg-[#00ff88] px-1.5 py-0.5 text-[11px] font-black text-[#050807]">
-            [F]
-          </span>
-          <span>PRESS [F] TO DRIVE &mdash; {nearCarPrompt.name}</span>
-        </button>
+      {/* Desktop "Press [F] to Drive" Floating Vehicle Entry Prompt (mobile uses right-thumb DRIVE button) */}
+      {showGameHUD &&
+        !isMobileMode &&
+        sceneMode === 'town' &&
+        !activePanel &&
+        !isCinematic &&
+        !isDriving &&
+        nearCarPrompt && (
+          <button
+            type="button"
+            onClick={toggleDrive}
+            className="pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-2.5 rounded-[4px] border border-[#00ff88] bg-[#0a0f0d]/95 px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.14em] text-white shadow-[0_0_24px_rgba(0,255,136,0.4)] hover:bg-[#00ff88] hover:text-[#050807] transition-all cursor-pointer"
+          >
+            <span className="rounded-[2px] bg-[#00ff88] px-1.5 py-0.5 text-[11px] font-black text-[#050807]">
+              [F]
+            </span>
+            <span>PRESS [F] TO DRIVE &mdash; {nearCarPrompt.name}</span>
+          </button>
+        )}
+
+      {/* Town Circular GTA Minimap, Digital Speedometer & Mobile/Tablet Virtual Joystick Controls */}
+      {showGameHUD && sceneMode === 'town' && !activePanel && !isCinematic && (
+        <TownMinimap isMobileMode={isMobileMode} />
+      )}
+      {showGameHUD && sceneMode === 'town' && !activePanel && !isCinematic && (
+        <DigitalSpeedometer isMobileMode={isMobileMode} />
+      )}
+      {showGameHUD && isMobileMode && !activePanel && !isCinematic && (
+        <TouchControls
+          isDriving={isDriving}
+          nearCarPrompt={nearCarPrompt}
+          toggleDrive={toggleDrive}
+        />
       )}
 
-      {/* Town Circular GTA Minimap, Digital Speedometer & Mobile Touch Controls */}
-      {sceneMode === 'town' && !activePanel && !isCinematic && <TownMinimap />}
-      {sceneMode === 'town' && !activePanel && !isCinematic && <DigitalSpeedometer />}
-      {!activePanel && !isCinematic && <TouchControls />}
-
-      {/* Bottom Controls Hint Bar */}
-      {!activePanel && !isCinematic && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-[3px] border border-white/15 bg-[#0a0f0d]/90 px-4 py-1.5 font-mono text-[10px] sm:text-[11px] tracking-[0.1em] text-[#C5D3CC] backdrop-blur-md whitespace-nowrap">
+      {/* Bottom Controls Hint Bar (Desktop Keyboard Mode Only - Mobile has interactive TouchControls) */}
+      {showGameHUD && !isMobileMode && !activePanel && !isCinematic && (
+        <div className="hidden md:block absolute bottom-3 left-1/2 -translate-x-1/2 rounded-[3px] border border-white/15 bg-[#0a0f0d]/90 px-4 py-1.5 font-mono text-[10px] sm:text-[11px] tracking-[0.1em] text-[#C5D3CC] backdrop-blur-md whitespace-nowrap">
           <strong className="text-[#00ff88]">WASD</strong> {isDriving ? 'Drive / Steer' : 'Move'} &bull;{' '}
           <strong className="text-[#00ff88]">SPACE</strong> {isDriving ? 'Handbrake Drift' : 'Jump'} &bull;{' '}
           <strong className="text-[#00ff88]">SHIFT</strong> {isDriving ? 'Nitro Boost' : 'Sprint'} &bull;{' '}

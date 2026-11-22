@@ -91,7 +91,6 @@ export default function TrafficManager() {
 
   useFrame((_, dtRaw) => {
     const dt = Math.min(dtRaw, 0.1);
-    if (useStore.getState().quality === 'low') return;
 
     const px = playerState.pos.x;
     const pz = playerState.pos.z;
