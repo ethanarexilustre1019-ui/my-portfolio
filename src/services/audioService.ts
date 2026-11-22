@@ -391,6 +391,44 @@ class TacticalAudioService {
       osc.stop(now + idx * 0.045 + 0.3);
     });
   }
+
+  public playDoorOpen(): void {
+    if (!this.enabled) return;
+    const ctx = this.initContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+
+    // Pneumatic release low puff
+    const puffOsc = ctx.createOscillator();
+    const puffGain = ctx.createGain();
+    puffOsc.type = 'sine';
+    puffOsc.frequency.setValueAtTime(140, now);
+    puffOsc.frequency.exponentialRampToValueAtTime(50, now + 0.35);
+    puffGain.gain.setValueAtTime(0.06, now);
+    puffGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.38);
+    puffOsc.connect(puffGain);
+    puffGain.connect(ctx.destination);
+    puffOsc.start(now);
+    puffOsc.stop(now + 0.4);
+
+    // High mechanical door sliding chime
+    [440, 659.25, 880, 1174.66].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + i * 0.06);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.05, now + i * 0.06 + 0.32);
+
+      gain.gain.setValueAtTime(0.04, now + i * 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.06 + 0.38);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + i * 0.06);
+      osc.stop(now + i * 0.06 + 0.4);
+    });
+  }
 }
 
 export const audioService = new TacticalAudioService();
