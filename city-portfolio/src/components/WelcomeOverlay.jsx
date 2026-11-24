@@ -27,25 +27,43 @@ export default function WelcomeOverlay() {
           </span>
         </div>
 
-        {/* Hero Intro */}
+        {/* Hero Intro with High-Visibility Glowing Classic View Callout beside Name */}
         <div className="mt-4 sm:mt-5">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#72B8FF]">
             INTERACTIVE 3D OPEN-WORLD DEVELOPER PORTFOLIO
           </p>
-          <div className="mt-1 flex items-start justify-between gap-3">
+
+          <div className="mt-1.5 flex flex-wrap items-center justify-between gap-3">
             <h1 className="font-heading text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-none">
               {ownerProfile.fullName}
             </h1>
-            <button
-              type="button"
-              onClick={() => useStore.getState().setClassicView(true)}
-              className="shrink-0 rounded-[3px] bg-[#F4F7F5] px-2.5 py-2 sm:px-3.5 font-mono text-[10px] sm:text-[11px] font-bold uppercase leading-tight tracking-[0.1em] text-[#050807] hover:bg-[#00ff88] transition-colors cursor-pointer"
-            >
-              📄 In a hurry?
-              <span className="block text-[9px] font-semibold opacity-75">Classic View</span>
-            </button>
+
+            {/* Eye-Catching Glowing Classic View Callout with Animated Pointing Arrow */}
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <div className="arrow-nudge-right flex items-center gap-1 rounded-full border border-[#ffd24a]/70 bg-[#ffd24a]/15 px-2.5 py-1 font-mono text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-[#ffd24a] shadow-[0_0_16px_rgba(255,210,74,0.4)]">
+                <span>FAST VIEW</span>
+                <span className="text-sm sm:text-base leading-none">➔</span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => useStore.getState().setClassicView(true)}
+                className="classic-cta-glow relative flex items-center gap-2.5 rounded-[5px] border-2 border-white bg-gradient-to-r from-[#00ff88] via-[#3dffa8] to-[#ffd24a] px-4 py-2.5 sm:px-5 sm:py-3 text-left font-mono text-[#050807] transition-all hover:brightness-110 active:scale-95 cursor-pointer"
+              >
+                <span className="text-xl sm:text-2xl leading-none">📄</span>
+                <div>
+                  <span className="block text-xs sm:text-sm font-black uppercase tracking-[0.08em] leading-none">
+                    IN A HURRY? CLASSIC VIEW
+                  </span>
+                  <span className="mt-1 block text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.06em] text-[#050807]/85 leading-none">
+                    RESUME &bull; PROJECTS &bull; SKILLS ↗
+                  </span>
+                </div>
+              </button>
+            </div>
           </div>
-          <p className="mt-2 text-xs sm:text-sm leading-relaxed text-[#C5D3CC]">
+
+          <p className="mt-3 text-xs sm:text-sm leading-relaxed text-[#C5D3CC]">
             Third-Year BSIT Student at{' '}
             <strong className="text-white">{ownerProfile.university}</strong>. Explore 5
             walkable 3D exhibition buildings, drive open-world vehicles, and inspect my
