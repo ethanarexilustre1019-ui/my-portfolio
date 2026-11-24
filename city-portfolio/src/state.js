@@ -447,6 +447,11 @@ export const useStore = create((set, get) => ({
   soundEnabled: true,
   quality: 'balanced', // 'low' | 'balanced' | 'high'
   deviceMode: null, // null (welcome screen) | 'mobile' (phone/tablet/iPad) | 'desktop' (PC/Mac)
+  classicView: false, // true = fast recruiter-friendly plain page (no 3D interaction)
+  setClassicView(v) {
+    clearInputs();
+    set({ classicView: v });
+  },
   isDriving: false,
   activeCarName: '',
   nearCarPrompt: null, // null | { id, name, accent }

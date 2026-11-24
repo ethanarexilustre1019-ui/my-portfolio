@@ -19,6 +19,8 @@ import {
 } from '../../../src/services/contactService';
 import { frameDataUrl, readImageFile } from '../textures';
 import WelcomeOverlay from './WelcomeOverlay';
+import ClassicView from './ClassicView';
+import LoadingScreen from './LoadingScreen';
 
 const NAV_ITEMS = [
   { id: 'hero', label: 'HOME', sheet: '01', sheetTitle: '3D TOWN HUB' },
@@ -1423,7 +1425,19 @@ export default function HUD() {
     <div className="pointer-events-none fixed inset-0 z-20 select-none text-[#F4F7F5]">
       {/* Pre-Entry Welcome & Device Selection Screen (Phone/Tablet vs PC/Desktop) */}
       <WelcomeOverlay />
+      <ClassicView />
+      <LoadingScreen />
 
+      {/* Always-visible Classic View shortcut for recruiters / slow phones */}
+      {showGameHUD && !isCinematic && (
+        <button
+          type="button"
+          onClick={() => useStore.getState().setClassicView(true)}
+          className="pointer-events-auto absolute right-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[25] hidden md:block rounded-[3px] border border-white/20 bg-[#0a0f0d]/90 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-[#C5D3CC] hover:border-[#00ff88] hover:text-[#00ff88] cursor-pointer"
+        >
+          📄 CLASSIC VIEW
+        </button>
+      )}
       {/* Top Dark Tactical / Neon-Emerald Architectural Navbar */}
       {showGameHUD && !isCinematic && (
         <header className="pointer-events-auto border-b border-white/10 bg-[#0a0f0d]/92 backdrop-blur-md pt-[env(safe-area-inset-top)]">

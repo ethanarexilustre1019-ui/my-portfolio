@@ -143,9 +143,18 @@ export default function WelcomeOverlay() {
           </button>
         </div>
 
-        <p className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[#8FA198]">
-          TIP: YOU CAN SWITCH BETWEEN TOUCH &amp; PC MODES ANYTIME FROM THE TOP BAR
-        </p>
+        <div className="mt-4 flex flex-col items-center gap-2">
+          <button
+            type="button"
+            onClick={() => useStore.getState().setClassicView(true)}
+            className="rounded-[3px] border border-white/25 bg-[#060b09] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-[#F4F7F5] hover:border-[#00ff88] hover:text-[#00ff88] cursor-pointer"
+          >
+            📄 IN A HURRY? OPEN CLASSIC VIEW (PROJECTS · SKILLS · RESUME)
+          </button>
+          <p className="text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[#8FA198]">
+            TIP: YOU CAN SWITCH BETWEEN TOUCH &amp; PC MODES ANYTIME FROM THE TOP BAR
+          </p>
+        </div>
       </div>
     </div>
   );
