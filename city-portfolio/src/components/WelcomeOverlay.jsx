@@ -32,9 +32,19 @@ export default function WelcomeOverlay() {
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#72B8FF]">
             INTERACTIVE 3D OPEN-WORLD DEVELOPER PORTFOLIO
           </p>
-          <h1 className="font-heading mt-1 text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-none">
-            {ownerProfile.fullName}
-          </h1>
+          <div className="mt-1 flex items-start justify-between gap-3">
+            <h1 className="font-heading text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-none">
+              {ownerProfile.fullName}
+            </h1>
+            <button
+              type="button"
+              onClick={() => useStore.getState().setClassicView(true)}
+              className="shrink-0 rounded-[3px] bg-[#F4F7F5] px-2.5 py-2 sm:px-3.5 font-mono text-[10px] sm:text-[11px] font-bold uppercase leading-tight tracking-[0.1em] text-[#050807] hover:bg-[#00ff88] transition-colors cursor-pointer"
+            >
+              📄 In a hurry?
+              <span className="block text-[9px] font-semibold opacity-75">Classic View</span>
+            </button>
+          </div>
           <p className="mt-2 text-xs sm:text-sm leading-relaxed text-[#C5D3CC]">
             Third-Year BSIT Student at{' '}
             <strong className="text-white">{ownerProfile.university}</strong>. Explore 5
@@ -144,13 +154,6 @@ export default function WelcomeOverlay() {
         </div>
 
         <div className="mt-4 flex flex-col items-center gap-2">
-          <button
-            type="button"
-            onClick={() => useStore.getState().setClassicView(true)}
-            className="rounded-[3px] border border-white/25 bg-[#060b09] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-[#F4F7F5] hover:border-[#00ff88] hover:text-[#00ff88] cursor-pointer"
-          >
-            📄 IN A HURRY? OPEN CLASSIC VIEW (PROJECTS · SKILLS · RESUME)
-          </button>
           <p className="text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[#8FA198]">
             TIP: YOU CAN SWITCH BETWEEN TOUCH &amp; PC MODES ANYTIME FROM THE TOP BAR
           </p>
